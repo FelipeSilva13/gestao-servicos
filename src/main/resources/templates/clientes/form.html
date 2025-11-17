@@ -3,16 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Cliente</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h2>Cliente</h2>
-<form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
-  <label>Nome: <input type="text" name="nome" th:value="${cliente.nome}"></label><br>
-  <label>Email: <input type="email" name="email" th:value="${cliente.email}"></label><br>
-  <label>Telefone: <input type="text" name="telefone" th:value="${cliente.telefone}"></label><br>
-  <label>Endereço: <input type="text" name="endereco" th:value="${cliente.endereco}"></label><br>
-  <button type="submit">Salvar</button>
-</form>
-<p><a href="/clientes">Voltar</a></p>
+  <div class="container">
+    <div class="header"><div class="title">Cliente</div></div>
+    <form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
+      <div class="grid">
+        <label>Nome
+          <input type="text" name="nome" th:value="${cliente.nome}">
+        </label>
+        <label>Email
+          <input type="email" name="email" th:value="${cliente.email}">
+        </label>
+        <label>Telefone
+          <input type="text" name="telefone" th:value="${cliente.telefone}">
+        </label>
+        <label>Endereço
+          <input type="text" name="endereco" th:value="${cliente.endereco}">
+        </label>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Salvar</button>
+        <a class="btn btn-secondary" href="/clientes">Voltar</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>

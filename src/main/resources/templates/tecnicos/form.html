@@ -3,17 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>Técnico</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h2>Técnico</h2>
-<form th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
-  <label>Nome: <input type="text" name="nome" th:value="${tecnico.nome}"></label><br>
-  <label>Email: <input type="email" name="email" th:value="${tecnico.email}"></label><br>
-  <label>Telefone: <input type="text" name="telefone" th:value="${tecnico.telefone}"></label><br>
-  <label>Especialidade: <input type="text" name="especialidade" th:value="${tecnico.especialidade}"></label><br>
-  <label>Disponível: <input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}"></label><br>
-  <button type="submit">Salvar</button>
-</form>
-<p><a href="/tecnicos">Voltar</a></p>
+  <div class="container">
+    <div class="header"><div class="title">Técnico</div></div>
+    <form class="grid" th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
+      <label>Nome
+        <input type="text" name="nome" th:value="${tecnico.nome}">
+      </label>
+      <label>Email
+        <input type="email" name="email" th:value="${tecnico.email}">
+      </label>
+      <label>Telefone
+        <input type="text" name="telefone" th:value="${tecnico.telefone}">
+      </label>
+      <label>Especialidade
+        <input type="text" name="especialidade" th:value="${tecnico.especialidade}">
+      </label>
+      <label>Disponível
+        <input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}">
+      </label>
+      <div class="actions">
+        <button class="btn" type="submit">Salvar</button>
+        <a class="btn btn-secondary" href="/tecnicos">Voltar</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>

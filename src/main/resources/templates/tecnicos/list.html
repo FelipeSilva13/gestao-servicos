@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Técnicos</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h2>Técnicos</h2>
-<a href="/tecnicos/novo">Novo Técnico</a>
-<table border="1">
+  <div class="container">
+    <div class="header">
+      <div class="title">Técnicos</div>
+      <nav class="nav">
+        <a href="/">Início</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/servicos">Serviços</a>
+        <a href="/os">OS</a>
+      </nav>
+    </div>
+    <div class="actions"><a class="btn" href="/tecnicos/novo">Novo Técnico</a></div>
+    <table class="table">
   <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Especialidade</th><th>Disponível</th><th>Ações</th></tr>
   <tr th:each="t : ${tecnicos}">
     <td th:text="${t.id}"></td>
@@ -17,13 +27,13 @@
     <td th:text="${t.especialidade}"></td>
     <td th:text="${t.disponivel}"></td>
     <td>
-      <a th:href="@{'/tecnicos/' + ${t.id} + '/editar'}">Editar</a>
+      <a class="btn btn-secondary" th:href="@{'/tecnicos/' + ${t.id} + '/editar'}">Editar</a>
       <form th:action="@{'/tecnicos/' + ${t.id} + '/excluir'}" method="post" style="display:inline">
-        <button type="submit">Excluir</button>
+        <button class="btn btn-danger" type="submit">Excluir</button>
       </form>
     </td>
   </tr>
-  </table>
-  <p><a href="/">Voltar</a></p>
+    </table>
+  </div>
 </body>
 </html>

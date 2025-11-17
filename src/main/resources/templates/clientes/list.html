@@ -3,25 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Clientes</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h2>Clientes</h2>
-<a href="/clientes/novo">Novo Cliente</a>
-<table border="1">
-  <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th></tr>
-  <tr th:each="c : ${clientes}">
-    <td th:text="${c.id}"></td>
-    <td th:text="${c.nome}"></td>
-    <td th:text="${c.email}"></td>
-    <td th:text="${c.telefone}"></td>
-    <td>
-      <a th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
-      <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline">
-        <button type="submit">Excluir</button>
-      </form>
-    </td>
-  </tr>
-  </table>
-  <p><a href="/">Voltar</a></p>
+  <div class="container">
+    <div class="header">
+      <div class="title">Clientes</div>
+      <nav class="nav">
+        <a href="/">Início</a>
+        <a href="/tecnicos">Técnicos</a>
+        <a href="/servicos">Serviços</a>
+        <a href="/os">OS</a>
+      </nav>
+    </div>
+    <div class="actions">
+      <a class="btn" href="/clientes/novo">Novo Cliente</a>
+    </div>
+    <table class="table">
+      <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th></tr>
+      <tr th:each="c : ${clientes}">
+        <td th:text="${c.id}"></td>
+        <td th:text="${c.nome}"></td>
+        <td th:text="${c.email}"></td>
+        <td th:text="${c.telefone}"></td>
+        <td>
+          <a class="btn btn-secondary" th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
+          <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline">
+            <button class="btn btn-danger" type="submit">Excluir</button>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
 </html>

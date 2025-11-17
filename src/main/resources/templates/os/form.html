@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Nova OS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
   </head>
 <body>
-<h2>Nova Ordem de Serviço</h2>
-<form action="/os" method="post">
+  <div class="container">
+    <div class="header"><div class="title">Nova Ordem de Serviço</div></div>
+    <form action="/os" method="post">
   <label>Cliente:
     <select name="cliente.id">
       <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
@@ -23,8 +25,11 @@
     </select>
   </label><br>
   <label>Observações: <input type="text" name="observacoes"></label><br>
-  <button type="submit">Criar</button>
-  </form>
-  <p><a href="/os">Voltar</a></p>
+  <div class="actions">
+    <button class="btn" type="submit">Criar</button>
+    <a class="btn btn-secondary" href="/os">Voltar</a>
+  </div>
+    </form>
+  </div>
 </body>
 </html>
