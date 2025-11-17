@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Ordens de Serviço</title>
+</head>
+<body>
+<h2>Ordens de Serviço</h2>
+<a href="/os/nova">Nova OS</a>
+<table border="1">
+  <tr><th>ID</th><th>Cliente</th><th>Técnico</th><th>Serviço</th><th>Status</th><th>Início</th><th>Fim</th><th>Valor</th><th>Ações</th></tr>
+  <tr th:each="o : ${ordens}">
+    <td th:text="${o.id}"></td>
+    <td th:text="${o.cliente != null ? o.cliente.nome : ''}"></td>
+    <td th:text="${o.tecnico != null ? o.tecnico.nome : ''}"></td>
+    <td th:text="${o.servico != null ? o.servico.descricao : ''}"></td>
+    <td th:text="${o.status}"></td>
+    <td th:text="${o.dataInicio}"></td>
+    <td th:text="${o.dataFim}"></td>
+    <td th:text="${o.valorTotal}"></td>
+    <td>
+      <form th:action="@{'/os/' + ${o.id} + '/status'}" method="post" style="display:inline">
+        <select name="status">
+          <option th:each="s : ${StatusOS}" th:value="${s}" th:text="${s}" th:selected="${s} == ${o.status}"></option>
+        </select>
+        <button type="submit">Atualizar</button>
+      </form>
+    </td>
+  </tr>
+  </table>
+  <p><a href="/">Voltar</a></p>
+</body>
+</html>

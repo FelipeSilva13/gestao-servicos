@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Cliente</title>
+</head>
+<body>
+<h2>Cliente</h2>
+<form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
+  <label>Nome: <input type="text" name="nome" th:value="${cliente.nome}"></label><br>
+  <label>Email: <input type="email" name="email" th:value="${cliente.email}"></label><br>
+  <label>Telefone: <input type="text" name="telefone" th:value="${cliente.telefone}"></label><br>
+  <label>Endereço: <input type="text" name="endereco" th:value="${cliente.endereco}"></label><br>
+  <button type="submit">Salvar</button>
+</form>
+<p><a href="/clientes">Voltar</a></p>
+</body>
+</html>

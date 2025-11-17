@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Técnicos</title>
+</head>
+<body>
+<h2>Técnicos</h2>
+<a href="/tecnicos/novo">Novo Técnico</a>
+<table border="1">
+  <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Especialidade</th><th>Disponível</th><th>Ações</th></tr>
+  <tr th:each="t : ${tecnicos}">
+    <td th:text="${t.id}"></td>
+    <td th:text="${t.nome}"></td>
+    <td th:text="${t.email}"></td>
+    <td th:text="${t.telefone}"></td>
+    <td th:text="${t.especialidade}"></td>
+    <td th:text="${t.disponivel}"></td>
+    <td>
+      <a th:href="@{'/tecnicos/' + ${t.id} + '/editar'}">Editar</a>
+      <form th:action="@{'/tecnicos/' + ${t.id} + '/excluir'}" method="post" style="display:inline">
+        <button type="submit">Excluir</button>
+      </form>
+    </td>
+  </tr>
+  </table>
+  <p><a href="/">Voltar</a></p>
+</body>
+</html>

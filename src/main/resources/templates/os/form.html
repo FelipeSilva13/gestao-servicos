@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Nova OS</title>
+  </head>
+<body>
+<h2>Nova Ordem de Serviço</h2>
+<form action="/os" method="post">
+  <label>Cliente:
+    <select name="cliente.id">
+      <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
+    </select>
+  </label><br>
+  <label>Técnico:
+    <select name="tecnico.id">
+      <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option>
+    </select>
+  </label><br>
+  <label>Serviço:
+    <select name="servico.id">
+      <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option>
+    </select>
+  </label><br>
+  <label>Observações: <input type="text" name="observacoes"></label><br>
+  <button type="submit">Criar</button>
+  </form>
+  <p><a href="/os">Voltar</a></p>
+</body>
+</html>
