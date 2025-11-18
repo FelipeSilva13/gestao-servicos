@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: gestao-servicos
+    env: java
+    buildCommand: ./mvnw -DskipTests clean package
+    startCommand: java -jar target/gestao-servicos-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JAVA_VERSION
+        value: 21
+    autoDeploy: true
