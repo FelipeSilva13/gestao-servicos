@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-COPY . .
+COPY src/main/java .
 RUN ./mvnw -q -e -DskipTests package
 
 FROM eclipse-temurin:21-jre
