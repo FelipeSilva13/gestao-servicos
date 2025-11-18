@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: gestao-servicos
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: mysql://root:MavquHnwXIsTDAsmtJYPNxaUwhXlaYYv@mysql.railway.internal:3306/railway
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: MavquHnwXIsTDAsmtJYPNxaUwhXlaYYv
