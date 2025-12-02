@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Registro</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
 <body>
-
-<h2>Registrar</h2>
-
-<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
-
-<form th:action="@{/registro}" method="post">
-    <label>Email:</label>
-    <input type="email" name="email"><br>
-
-    <label>Senha:</label>
-    <input type="password" name="senha"><br>
-
-    <button type="submit">Registrar</button>
-</form>
-
-<p><a th:href="@{/login}">Voltar</a></p>
-
+  <div class="container auth">
+    <div class="auth-title">Registrar</div>
+    <div class="card">
+      <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+      <form th:action="@{/registro}" method="post">
+        <label>Email
+          <input type="email" name="email" placeholder="seu@email.com">
+        </label>
+        <label>Senha
+          <input type="password" name="senha" placeholder="sua senha">
+        </label>
+        <div class="actions">
+          <button class="btn" type="submit">Registrar</button>
+          <a class="btn btn-secondary" th:href="@{/login}">Voltar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

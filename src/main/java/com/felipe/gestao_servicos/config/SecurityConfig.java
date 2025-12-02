@@ -1,7 +1,6 @@
 package com.felipe.gestao_servicos.config;
 
 
-import com.felipe.gestao_servicos.service.UsuarioUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

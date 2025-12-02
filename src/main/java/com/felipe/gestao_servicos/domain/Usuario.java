@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -22,6 +24,7 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String senha; // será criptografada
 
     @Column(nullable = false)
@@ -35,23 +38,35 @@ public class Usuario {
         this.role = role;
     }
 
-    public Long getId() { return id;
-    }
-    public void setId(Long id) { this.id = id;
-    }
-
-    public String getEmail() { return email;
-    }
-    public void setEmail(String email) { this.email = email;
+    public Long getId() {
+        return id;
     }
 
-    public String getSenha() { return senha;
-    }
-    public void setSenha(String senha) { this.senha = senha;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getRole() { return role;
+    public String getEmail() {
+        return email;
     }
-    public void setRole(String role) { this.role = role;
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

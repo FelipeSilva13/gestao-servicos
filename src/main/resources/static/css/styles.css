@@ -23,3 +23,23 @@ input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .footer{margin-top:16px}
 .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}
+.
+auth{max-width:420px;margin:40px auto}
+.card{padding:20px;background:rgba(17,24,39,.7);border:1px solid rgba(255,255,255,.06);border-radius:12px}
+.auth-title{font-size:24px;font-weight:600;margin-bottom:12px}
+.alert{padding:10px 12px;border-radius:8px;margin-bottom:12px}
+.alert-error{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fff}
+.alert-success{background:rgba(22,163,74,.2);border:1px solid rgba(22,163,74,.4);color:#fff}
+@media (max-width: 768px){
+  .container{max-width:100%;padding:16px;margin:12px auto}
+  .grid{grid-template-columns:1fr}
+  .nav{gap:8px}
+  .nav a{padding:8px 10px}
+}
+@media (max-width: 480px){
+  .nav{flex-direction:column}
+  .actions{display:flex;flex-direction:column;gap:8px}
+  .btn{width:100%}
+  .table{display:block;overflow-x:auto;white-space:nowrap}
+  input,select{font-size:16px}
+}

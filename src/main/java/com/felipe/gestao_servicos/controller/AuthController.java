@@ -29,13 +29,13 @@ public class AuthController {
         if (logout != null)
             model.addAttribute("logoutMessage", "Logout realizado");
 
-        return "login";
+        return "usuario/login";
     }
 
     // Tela de registro
     @GetMapping("/registro")
     public String registroPage() {
-        return "registro";
+        return "usuario/registro";
     }
 
     @PostMapping("/registro")
