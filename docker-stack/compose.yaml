@@ -1,0 +1,46 @@
+services:
+
+  database:
+    image: mysql:8.4
+    container_name: gestao_servicos_database
+
+    ports:
+      - "3308:3306"
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: felipe87
+      MYSQL_DATABASE: gestao_servicos
+
+    volumes:
+      - gestao_servicos-data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pfelipe87"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+
+    container_name: gestao_servicos
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/gestao_servicos
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: felipe87
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:3003,http://localhost:5176,http://localhost:4176
+
+    ports:
+      - "8090:8080"
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+
+volumes:
+  gestao_servicos-data:
