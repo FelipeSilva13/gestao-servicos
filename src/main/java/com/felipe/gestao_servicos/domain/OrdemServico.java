@@ -21,12 +21,15 @@ public class OrdemServico {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "tecnico_id", nullable = false)
     private Tecnico tecnico;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +41,7 @@ public class OrdemServico {
 
     private LocalDateTime dataFim;
 
-    @Size(max = 500)
+    @Column(length = 500)
     private String observacoes;
 
     @Column(precision = 12, scale = 2)

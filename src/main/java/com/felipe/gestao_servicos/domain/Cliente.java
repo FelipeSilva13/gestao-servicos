@@ -20,17 +20,16 @@ public class Cliente {
     private Long id;
 
     @NotBlank
-    @Size(max = 120)
     private String nome;
 
     @Email
-    @Size(max = 160)
+    @Column(unique = true,  nullable = false)
     private String email;
 
-    @Size(max = 20)
+    @Column(length = 11)
     private String telefone;
 
-    @Size(max = 200)
+    @Column(length = 255)
     private String endereco;
 
 
