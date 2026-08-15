@@ -6,7 +6,7 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: mysql://root:MavquHnwXIsTDAsmtJYPNxaUwhXlaYYv@mysql.railway.internal:3306/railway
+        value: jdbc:mysql://mysql.railway.internal:3306/railway
       - key: SPRING_DATASOURCE_USERNAME
         value: root
       - key: SPRING_DATASOURCE_PASSWORD
