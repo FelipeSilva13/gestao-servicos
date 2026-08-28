@@ -6,29 +6,47 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header"><div class="title">Técnico</div></div>
-    <form class="grid" th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
-      <label>Nome
-        <input type="text" name="nome" th:value="${tecnico.nome}">
-      </label>
-      <label>Email
-        <input type="email" name="email" th:value="${tecnico.email}">
-      </label>
-      <label>Telefone
-        <input type="text" name="telefone" th:value="${tecnico.telefone}">
-      </label>
-      <label>Especialidade
-        <input type="text" name="especialidade" th:value="${tecnico.especialidade}">
-      </label>
-      <label>Disponível
-        <input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}">
-      </label>
-      <div class="actions">
-        <button class="btn" type="submit">Salvar</button>
-        <a class="btn btn-secondary" href="/tecnicos">Voltar</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
+        <a class="active" href="/tecnicos">Técnicos</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/servicos">Serviços</a>
+        <a href="/os">Ordens de Serviço</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Técnico</div>
       </div>
-    </form>
+
+      <div class="panel card">
+        <form class="grid" th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
+          <label>Nome
+            <input type="text" name="nome" th:value="${tecnico.nome}" required>
+          </label>
+          <label>Email
+            <input type="email" name="email" th:value="${tecnico.email}" required>
+          </label>
+          <label>Telefone
+            <input type="text" name="telefone" th:value="${tecnico.telefone}" placeholder="(11) 98765-4321">
+          </label>
+          <label>Especialidade
+            <input type="text" name="especialidade" th:value="${tecnico.especialidade}">
+          </label>
+          <label style="align-items:center;display:flex;gap:8px">Disponível
+            <input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}">
+          </label>
+          <div class="actions">
+            <button class="btn" type="submit">Salvar</button>
+            <a class="btn btn-secondary" href="/tecnicos">Voltar</a>
+          </div>
+        </form>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>

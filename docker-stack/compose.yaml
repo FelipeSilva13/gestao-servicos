@@ -1,7 +1,7 @@
 services:
 
   database:
-    image: mysql:8.4
+    image: mysql:8.0
     container_name: gestao_servicos_database
 
     ports:
@@ -32,6 +32,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/gestao_servicos
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: felipe87
+      SPRING_FLYWAY_ENABLED: "false"
       APP_CORS_ALLOWED_ORIGINS: http://localhost:3003,http://localhost:5176,http://localhost:4176
 
     ports:

@@ -6,28 +6,46 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header"><div class="title">Cliente</div></div>
-    <form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
-      <div class="grid">
-        <label>Nome
-          <input type="text" name="nome" th:value="${cliente.nome}">
-        </label>
-        <label>Email
-          <input type="email" name="email" th:value="${cliente.email}">
-        </label>
-        <label>Telefone
-          <input type="text" name="telefone" th:value="${cliente.telefone}">
-        </label>
-        <label>Endereço
-          <input type="text" name="endereco" th:value="${cliente.endereco}">
-        </label>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
+        <a class="active" href="/clientes">Clientes</a>
+        <a href="/tecnicos">Técnicos</a>
+        <a href="/servicos">Serviços</a>
+        <a href="/os">Ordens de Serviço</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Cliente</div>
       </div>
-      <div class="actions">
-        <button class="btn" type="submit">Salvar</button>
-        <a class="btn btn-secondary" href="/clientes">Voltar</a>
+
+      <div class="panel card">
+        <form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
+          <div class="grid">
+            <label>Nome
+              <input type="text" name="nome" th:value="${cliente.nome}" required>
+            </label>
+            <label>Email
+              <input type="email" name="email" th:value="${cliente.email}" required>
+            </label>
+            <label>Telefone
+              <input type="text" name="telefone" th:value="${cliente.telefone}" placeholder="(11) 91234-5678">
+            </label>
+            <label>Endereço
+              <input type="text" name="endereco" th:value="${cliente.endereco}">
+            </label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Salvar</button>
+            <a class="btn btn-secondary" href="/clientes">Voltar</a>
+          </div>
+        </form>
       </div>
-    </form>
+
+    </main>
   </div>
 </body>
 </html>

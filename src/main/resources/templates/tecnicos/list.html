@@ -6,34 +6,40 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="title">Técnicos</div>
-      <nav class="nav">
-        <a href="/">Início</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
+        <a class="active" href="/tecnicos">Técnicos</a>
         <a href="/clientes">Clientes</a>
         <a href="/servicos">Serviços</a>
-        <a href="/os">OS</a>
+        <a href="/os">Ordens de Serviço</a>
       </nav>
-    </div>
-    <div class="actions"><a class="btn" href="/tecnicos/novo">Novo Técnico</a></div>
-    <table class="table">
-  <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Especialidade</th><th>Disponível</th><th>Ações</th></tr>
-  <tr th:each="t : ${tecnicos}">
-    <td th:text="${t.id}"></td>
-    <td th:text="${t.nome}"></td>
-    <td th:text="${t.email}"></td>
-    <td th:text="${t.telefone}"></td>
-    <td th:text="${t.especialidade}"></td>
-    <td th:text="${t.disponivel}"></td>
-    <td>
-      <a class="btn btn-secondary" th:href="@{'/tecnicos/' + ${t.id} + '/editar'}">Editar</a>
-      <form th:action="@{'/tecnicos/' + ${t.id} + '/excluir'}" method="post" style="display:inline">
-        <button class="btn btn-danger" type="submit">Excluir</button>
-      </form>
-    </td>
-  </tr>
-    </table>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Técnicos</div>
+        <div class="actions"><a class="btn" href="/tecnicos/novo">+ Novo Técnico</a></div>
+      </div>
+
+      <div class="panel">
+        <div th:each="t : ${tecnicos}" class="list-row">
+          <div>
+            <div class="list-title" th:text="${t.nome}"></div>
+            <div class="muted" th:text="${t.especialidade}"></div>
+          </div>
+          <div style="text-align:right">
+            <div th:text="${t.telefone}"></div>
+            <div class="muted" th:text="${t.email}"></div>
+            <div style="margin-top:8px">
+              <a class="btn btn-secondary" th:href="@{'/tecnicos/' + ${t.id} + '/editar'}">Editar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>

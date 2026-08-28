@@ -6,33 +6,35 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="title">Serviços</div>
-      <nav class="nav">
-        <a href="/">Início</a>
-        <a href="/clientes">Clientes</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
         <a href="/tecnicos">Técnicos</a>
-        <a href="/os">OS</a>
+        <a href="/clientes">Clientes</a>
+        <a class="active" href="/servicos">Serviços</a>
+        <a href="/os">Ordens de Serviço</a>
       </nav>
-    </div>
-    <div class="actions"><a class="btn" href="/servicos/novo">Novo Serviço</a></div>
-    <table class="table">
-  <tr><th>ID</th><th>Descrição</th><th>Tipo</th><th>Custo</th><th>Tempo Estimado</th><th>Ações</th></tr>
-  <tr th:each="s : ${servicos}">
-    <td th:text="${s.id}"></td>
-    <td th:text="${s.descricao}"></td>
-    <td th:text="${s.tipo}"></td>
-    <td th:text="${s.custo}"></td>
-    <td th:text="${s.tempoEstimadoMinutos}"></td>
-    <td>
-      <a class="btn btn-secondary" th:href="@{'/servicos/' + ${s.id} + '/editar'}">Editar</a>
-      <form th:action="@{'/servicos/' + ${s.id} + '/excluir'}" method="post" style="display:inline">
-        <button class="btn btn-danger" type="submit">Excluir</button>
-      </form>
-    </td>
-  </tr>
-    </table>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Serviços</div>
+        <div class="actions"><a class="btn" href="/servicos/novo">+ Novo Serviço</a></div>
+      </div>
+
+      <div class="service-grid">
+        <div th:each="s : ${servicos}" class="service-card">
+          <h4 th:text="${s.descricao}"></h4>
+          <p th:text="${s.descricao}"></p>
+          <div style="display:flex;justify-content:space-between;margin-top:12px">
+            <div><strong th:text="${s.preco}"></strong></div>
+            <div class="muted" th:text="${s.duracao}"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>

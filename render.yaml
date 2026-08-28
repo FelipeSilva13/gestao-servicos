@@ -4,10 +4,11 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile
     plan: free
+    healthCheckPath: /
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: mysql://root:MavquHnwXIsTDAsmtJYPNxaUwhXlaYYv@mysql.railway.internal:3306/railway
+        sync: false
       - key: SPRING_DATASOURCE_USERNAME
-        value: root
+        sync: false
       - key: SPRING_DATASOURCE_PASSWORD
-        value: MavquHnwXIsTDAsmtJYPNxaUwhXlaYYv
+        sync: false

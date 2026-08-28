@@ -6,30 +6,52 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
   </head>
 <body>
-  <div class="container">
-    <div class="header"><div class="title">Nova Ordem de Serviço</div></div>
-    <form action="/os" method="post">
-  <label>Cliente:
-    <select name="cliente.id">
-      <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
-    </select>
-  </label><br>
-  <label>Técnico:
-    <select name="tecnico.id">
-      <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option>
-    </select>
-  </label><br>
-  <label>Serviço:
-    <select name="servico.id">
-      <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option>
-    </select>
-  </label><br>
-  <label>Observações: <input type="text" name="observacoes"></label><br>
-  <div class="actions">
-    <button class="btn" type="submit">Criar</button>
-    <a class="btn btn-secondary" href="/os">Voltar</a>
-  </div>
-    </form>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
+        <a href="/tecnicos">Técnicos</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/servicos">Serviços</a>
+        <a class="active" href="/os">Ordens de Serviço</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Nova Ordem de Serviço</div>
+      </div>
+
+      <div class="panel card">
+        <form action="/os" method="post">
+          <div class="grid">
+            <label>Cliente:
+              <select name="cliente.id">
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
+              </select>
+            </label>
+            <label>Técnico:
+              <select name="tecnico.id">
+                <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option>
+              </select>
+            </label>
+            <label>Serviço:
+              <select name="servico.id">
+                <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option>
+              </select>
+            </label>
+            <label>Observações:
+              <input type="text" name="observacoes">
+            </label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Criar</button>
+            <a class="btn btn-secondary" href="/os">Voltar</a>
+          </div>
+        </form>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>
