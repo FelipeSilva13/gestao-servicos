@@ -6,22 +6,38 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="title">Gestão de Serviços</div>
-      <nav class="nav">
-        <a href="/clientes">Clientes</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a class="active" href="/">Dashboard</a>
         <a href="/tecnicos">Técnicos</a>
+        <a href="/clientes">Clientes</a>
         <a href="/servicos">Serviços</a>
         <a href="/os">Ordens de Serviço</a>
       </nav>
-    </div>
-    <div class="actions">
-      <a class="btn" href="/clientes">Ir para Clientes</a>
-      <a class="btn" href="/tecnicos">Ir para Técnicos</a>
-      <a class="btn" href="/servicos">Ir para Serviços</a>
-      <a class="btn" href="/os">Ir para OS</a>
-    </div>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="actions"><a class="btn" href="/os/nova">+ Nova OS</a></div>
+      </div>
+
+      <div class="cards">
+        <div class="card"><div class="muted">Técnicos</div><div class="big">2</div><div class="muted">de 3 total</div></div>
+        <div class="card"><div class="muted">Clientes</div><div class="big">3</div></div>
+        <div class="card"><div class="muted">Serviços</div><div class="big">3</div></div>
+        <div class="card"><div class="muted">OS Abertas</div><div class="big">1</div></div>
+      </div>
+
+      <div class="panel">
+        <h3>Ordens Recentes</h3>
+        <div class="list-row"><div><div class="list-title">Beta Comércio S.A.</div><div class="muted">OS-003 · 15/08/2026</div></div><div class="badge">Aberta</div></div>
+        <div class="list-row"><div><div class="list-title">João Costa</div><div class="muted">OS-002 · 10/08/2026</div></div><div class="badge" style="background:#f59e0b">Em Andamento</div></div>
+        <div class="list-row"><div><div class="list-title">Empresa Alfa Ltda</div><div class="muted">OS-001 · 01/08/2026</div></div><div class="badge" style="background:#10b981">Concluída</div></div>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>

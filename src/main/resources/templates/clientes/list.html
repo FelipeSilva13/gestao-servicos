@@ -6,34 +6,40 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="title">Clientes</div>
-      <nav class="nav">
-        <a href="/">Início</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
+      <nav class="menu">
+        <a href="/">Dashboard</a>
+        <a class="active" href="/clientes">Clientes</a>
         <a href="/tecnicos">Técnicos</a>
         <a href="/servicos">Serviços</a>
-        <a href="/os">OS</a>
+        <a href="/os">Ordens de Serviço</a>
       </nav>
-    </div>
-    <div class="actions">
-      <a class="btn" href="/clientes/novo">Novo Cliente</a>
-    </div>
-    <table class="table">
-      <tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th></tr>
-      <tr th:each="c : ${clientes}">
-        <td th:text="${c.id}"></td>
-        <td th:text="${c.nome}"></td>
-        <td th:text="${c.email}"></td>
-        <td th:text="${c.telefone}"></td>
-        <td>
-          <a class="btn btn-secondary" th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
-          <form th:action="@{'/clientes/' + ${c.id} + '/excluir'}" method="post" style="display:inline">
-            <button class="btn btn-danger" type="submit">Excluir</button>
-          </form>
-        </td>
-      </tr>
-    </table>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">Clientes</div>
+        <div class="actions"><a class="btn" href="/clientes/novo">+ Novo Cliente</a></div>
+      </div>
+
+      <div class="panel">
+        <div th:each="c : ${clientes}" class="list-row">
+          <div>
+            <div class="list-title" th:text="${c.nome}"></div>
+              <div class="muted" th:text="${c.email}"></div>
+          </div>
+          <div style="text-align:right">
+            <div th:text="${c.telefone}"></div>
+              <div class="muted" th:text="${c.endereco}"></div>
+            <div style="margin-top:8px">
+              <a class="btn btn-secondary" th:href="@{'/clientes/' + ${c.id} + '/editar'}">Editar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 </body>
 </html>
