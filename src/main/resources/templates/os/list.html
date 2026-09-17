@@ -27,11 +27,16 @@
         <div th:each="o : ${ordens}" class="list-row">
           <div>
             <div class="list-title" th:text="${o.cliente != null ? o.cliente.nome : ''}"></div>
-            <div class="muted" th:text="'OS-' + ${o.id} + ' · ' + ${o.dataCriacao}"></div>
+            <div class="muted" th:text="'OS-' + ${o.id} + ' · ' + ${#temporals.format(o.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
           </div>
           <div style="text-align:right">
             <div class="muted" th:text="${o.servico != null ? o.servico.descricao : ''}"></div>
-            <div style="margin-top:8px"><span class="badge" th:text="${o.status}"></span></div>
+            <form th:action="@{/os/{id}/status(id=${o.id})}" method="post" style="margin-top:8px">
+              <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço">
+                <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}"
+                        th:selected="${status == o.status}"></option>
+              </select>
+            </form>
           </div>
         </div>
       </div>

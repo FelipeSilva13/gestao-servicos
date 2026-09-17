@@ -1,8 +1,7 @@
-package com.felipe.gestao_servicos.dto;
+package com.felipe.gestao_servicos.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ClienteRequest(
@@ -12,7 +11,7 @@ public record ClienteRequest(
         String nome,
 
         @NotBlank(message = "O email é obrigatório")
-        @Size(max = 601, message = "O email deve ser no máximo 160 caracteres")
+        @Size(max = 160, message = "O email deve ser no máximo 160 caracteres")
         @Email(message = "email inválido")
         String email,
 
@@ -20,6 +19,6 @@ public record ClienteRequest(
         String telefone,
 
         @Size(max = 255)
-        String endereço
+        String endereco
 ) {
 }

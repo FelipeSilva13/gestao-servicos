@@ -32,6 +32,10 @@ public class Cliente {
     @Column(length = 255)
     private String endereco;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
+
 
     public Long getId() {
         return id;

@@ -26,11 +26,26 @@
       <div class="service-grid">
         <div th:each="s : ${servicos}" class="service-card">
           <h4 th:text="${s.descricao}"></h4>
-          <p th:text="${s.descricao}"></p>
+          <p th:text="${s.tipo}"></p>
           <div style="display:flex;justify-content:space-between;margin-top:12px">
-            <div><strong th:text="${s.preco}"></strong></div>
-            <div class="muted" th:text="${s.duracao}"></div>
+            <div><strong th:text="${'R$ ' + s.custo}"></strong></div><br>
+            <div class="muted" th:text="${s.tempoEstimadoMinutos + ' min'}"></div><br>
           </div>
+            <div class="actions">
+                <a class="btn"
+                   th:href="@{/servicos/{id}/editar(id=${s.id})}">
+                    Editar
+                </a>
+
+                <form th:action="@{/servicos/{id}/excluir(id=${s.id})}"
+                      method="post">
+
+                    <button class="btn btn-secondary" type="submit">
+                        Excluir
+                    </button>
+
+                </form>
+            </div>
         </div>
       </div>
 

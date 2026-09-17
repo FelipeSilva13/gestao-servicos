@@ -23,19 +23,68 @@
         <div class="actions"><a class="btn" href="/os/nova">+ Nova OS</a></div>
       </div>
 
-      <div class="cards">
-        <div class="card"><div class="muted">Técnicos</div><div class="big">2</div><div class="muted">de 3 total</div></div>
-        <div class="card"><div class="muted">Clientes</div><div class="big">3</div></div>
-        <div class="card"><div class="muted">Serviços</div><div class="big">3</div></div>
-        <div class="card"><div class="muted">OS Abertas</div><div class="big">1</div></div>
-      </div>
+        <div class="cards">
 
-      <div class="panel">
-        <h3>Ordens Recentes</h3>
-        <div class="list-row"><div><div class="list-title">Beta Comércio S.A.</div><div class="muted">OS-003 · 15/08/2026</div></div><div class="badge">Aberta</div></div>
-        <div class="list-row"><div><div class="list-title">João Costa</div><div class="muted">OS-002 · 10/08/2026</div></div><div class="badge" style="background:#f59e0b">Em Andamento</div></div>
-        <div class="list-row"><div><div class="list-title">Empresa Alfa Ltda</div><div class="muted">OS-001 · 01/08/2026</div></div><div class="badge" style="background:#10b981">Concluída</div></div>
-      </div>
+            <div class="card">
+                <div class="muted">Técnicos</div>
+                <div class="big" th:text="${totalTecnicos}">0</div>
+                <div class="muted">cadastrados</div>
+            </div>
+
+            <div class="card">
+                <div class="muted">Clientes</div>
+                <div class="big" th:text="${totalClientes}">0</div>
+                <div class="muted">cadastrados</div>
+            </div>
+
+            <div class="card">
+                <div class="muted">Serviços</div>
+                <div class="big" th:text="${totalServicos}">0</div>
+                <div class="muted">cadastrados</div>
+            </div>
+
+            <div class="card">
+                <div class="muted">OS Abertas</div>
+                <div class="big" th:text="${totalOrdens}">0</div>
+                <div class="muted">ordens de serviço</div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <h3>Ordens Recentes</h3>
+
+            <div class="list-row"
+                 th:each="ordem : ${ordensRecentes}">
+
+                <div>
+
+                    <div class="list-title"
+                         th:text="${ordem.cliente.nome}">
+                        Nome do cliente
+                    </div>
+
+                    <div class="muted">
+                <span th:text="'OS-' + ${ordem.id}">
+                    OS-001
+                </span>
+
+                        ·
+
+                        <span th:text="${#temporals.format(ordem.dataCriacao, 'dd/MM/yyyy')}">
+                    01/08/2026
+                </span>
+                    </div>
+
+                </div>
+
+                <div class="badge"
+                     th:text="${ordem.status}">
+                    PENDENTE
+                </div>
+
+            </div>
+        </div>
 
     </main>
   </div>

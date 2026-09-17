@@ -12,6 +12,7 @@
     <div class="card">
       <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
       <div th:if="${logoutMessage}" class="alert alert-success" th:text="${logoutMessage}"></div>
+      <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
       <form th:action="@{/do-login}" method="post">
         <label>Email
@@ -22,7 +23,7 @@
         </label>
         <div class="actions">
           <button class="btn" type="submit">Entrar</button>
-          <a class="btn btn-secondary" th:href="@{/registro}">Criar conta</a>
+          <a class="btn btn-secondary" th:href="@{/registro}">Criar empresa</a>
         </div>
       </form>
     </div>

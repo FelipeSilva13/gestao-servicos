@@ -1,5 +1,6 @@
 package com.felipe.gestao_servicos.config;
 
+import com.felipe.gestao_servicos.config.multitenancy.TenantContextFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.felipe.gestao_servicos.repository.UsuarioRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -24,7 +27,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public TenantContextFilter tenantContextFilter(UsuarioRepository usuarioRepository) {
+        return new TenantContextFilter(usuarioRepository);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, TenantContextFilter tenantContextFilter) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
@@ -39,7 +47,8 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
-                )
+                    )
+                    .addFilterAfter(tenantContextFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")

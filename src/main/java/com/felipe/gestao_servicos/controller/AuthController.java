@@ -1,10 +1,11 @@
 package com.felipe.gestao_servicos.controller;
 
-import com.felipe.gestao_servicos.service.UsuarioService;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import com.felipe.gestao_servicos.dto.request.CadastroEmpresaRequest;
+import com.felipe.gestao_servicos.service.CadastroEmpresaService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,27 +13,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AuthController {
 
-    private final UsuarioService service;
+    private final CadastroEmpresaService cadastroEmpresaService;
 
-    public AuthController(UsuarioService service) {
-        this.service = service;
+    public AuthController(CadastroEmpresaService cadastroEmpresaService) {
+        this.cadastroEmpresaService = cadastroEmpresaService;
     }
 
     // Tela de login
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout,
+                        @RequestParam(value = "success", required = false) String success,
                         Model model) {
         if (error != null)
             model.addAttribute("errorMessage", "Email ou senha inválidos");
 
         if (logout != null)
             model.addAttribute("logoutMessage", "Logout realizado");
+        if (success != null)
+            model.addAttribute("successMessage", success);
 
         return "usuario/login";
     }
 
-    // Tela de registro
+    // Cadastro público: empresa + primeiro administrador.
     @GetMapping("/registro")
     public String registroPage() {
         return "usuario/registro";
@@ -40,16 +44,24 @@ public class AuthController {
 
     @PostMapping("/registro")
     public String registrar(
-            @RequestParam @Email String email,
-            @RequestParam @NotBlank String senha,
+            @Valid CadastroEmpresaRequest request,
+            BindingResult bindingResult,
             Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return "usuario/registro";
+        }
+
         try {
-            service.registrar(email, senha);
-            return "redirect:/login";
+                cadastroEmpresaService.cadastrar(request);
+                return "redirect:/login?success=Usuário cadastrado com sucesso";
+
         } catch (Exception e) {
+
             model.addAttribute("errorMessage", e.getMessage());
-            return "registro";
+
+            return "usuario/registro";
         }
     }
 }

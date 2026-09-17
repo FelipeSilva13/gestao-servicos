@@ -1,6 +1,7 @@
 package com.felipe.gestao_servicos.controller;
 
-import com.felipe.gestao_servicos.domain.Tecnico;
+import com.felipe.gestao_servicos.dto.request.TecnicoRequest;
+import com.felipe.gestao_servicos.dto.response.TecnicoResponse;
 import com.felipe.gestao_servicos.service.TecnicoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,28 +14,36 @@ import java.util.List;
 public class TecnicoController {
     private final TecnicoService service;
 
-    public TecnicoController(TecnicoService service) { this.service = service; }
+    public TecnicoController(TecnicoService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public List<Tecnico> listar() { return service.listar(); }
+    public List<TecnicoResponse> listar() {
+        return service.listar();
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tecnico> obter(@PathVariable Long id) {
-        Tecnico t = service.obter(id);
-        return t != null ? ResponseEntity.ok(t) : ResponseEntity.notFound().build();
+    public ResponseEntity<TecnicoResponse> buscarPorId(@PathVariable Long id) {
+        TecnicoResponse tecnicoResponse = service.buscarPorId(id);
+        return tecnicoResponse != null
+                ? ResponseEntity.ok(tecnicoResponse)
+                : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<Tecnico> criar(@Valid @RequestBody Tecnico t) {
-        return ResponseEntity.ok(service.salvar(t));
+    public ResponseEntity<TecnicoResponse> criar(@Valid @RequestBody TecnicoRequest tecnicoRequest) {
+        return ResponseEntity.ok(service.salvar(tecnicoRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tecnico> atualizar(@PathVariable Long id, @Valid @RequestBody Tecnico t) {
-        Tecnico existente = service.obter(id);
-        if (existente == null) return ResponseEntity.notFound().build();
-        t.setId(id);
-        return ResponseEntity.ok(service.salvar(t));
+    public ResponseEntity<TecnicoResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody TecnicoRequest tecnicoRequest) {
+        TecnicoResponse atualizado = service.atualizar(id, tecnicoRequest);
+        return atualizado != null
+                ? ResponseEntity.ok(atualizado)
+                : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
