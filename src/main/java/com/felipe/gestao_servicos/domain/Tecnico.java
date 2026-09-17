@@ -33,4 +33,8 @@ public class Tecnico {
     private String especialidade;
 
     private Boolean disponivel = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
 }

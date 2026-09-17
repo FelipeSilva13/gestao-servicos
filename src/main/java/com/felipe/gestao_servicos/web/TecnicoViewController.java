@@ -1,6 +1,7 @@
 package com.felipe.gestao_servicos.web;
 
 import com.felipe.gestao_servicos.domain.Tecnico;
+import com.felipe.gestao_servicos.dto.request.TecnicoRequest;
 import com.felipe.gestao_servicos.service.TecnicoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,21 +27,21 @@ public class TecnicoViewController {
     }
 
     @PostMapping
-    public String criar(@ModelAttribute Tecnico tecnico) {
+    public String criar(@ModelAttribute TecnicoRequest tecnico) {
         service.salvar(tecnico);
         return "redirect:/tecnicos";
     }
 
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable Long id, Model model) {
-        model.addAttribute("tecnico", service.obter(id));
+        model.addAttribute("tecnico", service.buscarPorId(id));
         return "tecnicos/form";
     }
 
     @PostMapping("/{id}")
-    public String atualizar(@PathVariable Long id, @ModelAttribute Tecnico tecnico) {
-        tecnico.setId(id);
-        service.salvar(tecnico);
+    public String atualizar(@PathVariable Long id, @ModelAttribute TecnicoRequest tecnico) {
+
+        service.atualizar(id, tecnico);
         return "redirect:/tecnicos";
     }
 

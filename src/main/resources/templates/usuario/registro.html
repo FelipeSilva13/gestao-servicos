@@ -2,23 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Registro</title>
+    <title>Cadastrar empresa</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
   <div class="container auth">
-    <div class="auth-title">Registrar</div>
+    <div class="auth-title">Criar empresa</div>
     <div class="card">
       <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
       <form th:action="@{/registro}" method="post">
+        <label>Nome da empresa
+          <input type="text" name="nomeEmpresa" placeholder="Minha Empresa" required maxlength="255">
+        </label>
         <label>Email
-          <input type="email" name="email" placeholder="seu@email.com">
+          <input type="email" name="email" placeholder="admin@empresa.com" required maxlength="255">
         </label>
         <label>Senha
-          <input type="password" name="senha" placeholder="sua senha">
+          <input type="password" name="senha" placeholder="mínimo de 6 caracteres" required minlength="6" maxlength="100">
         </label>
         <div class="actions">
-          <button class="btn" type="submit">Registrar</button>
+          <button class="btn" type="submit">Criar empresa e administrador</button>
           <a class="btn btn-secondary" th:href="@{/login}">Voltar</a>
         </div>
       </form>

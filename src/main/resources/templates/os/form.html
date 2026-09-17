@@ -23,21 +23,28 @@
       </div>
 
       <div class="panel card">
+        <div th:if="${param.error}" class="alert alert-error" th:text="${param.error}"></div>
         <form action="/os" method="post">
           <div class="grid">
             <label>Cliente:
-              <select name="cliente.id">
+              <select name="cliente.id" required>
                 <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
               </select>
             </label>
             <label>Técnico:
-              <select name="tecnico.id">
+              <select name="tecnico.id" required>
                 <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option>
               </select>
             </label>
             <label>Serviço:
-              <select name="servico.id">
+              <select name="servico.id" required>
                 <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option>
+              </select>
+            </label>
+            <label>Status:
+              <select name="status" required>
+                <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}"
+                        th:selected="${status == T(com.felipe.gestao_servicos.enums.StatusOS).PENDENTE}"></option>
               </select>
             </label>
             <label>Observações:

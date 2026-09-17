@@ -1,6 +1,8 @@
 package com.felipe.gestao_servicos.controller;
 
 import com.felipe.gestao_servicos.domain.Cliente;
+import com.felipe.gestao_servicos.dto.request.ClienteRequest;
+import com.felipe.gestao_servicos.dto.response.ClienteResponse;
 import com.felipe.gestao_servicos.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,28 +15,37 @@ import java.util.List;
 public class ClienteController {
     private final ClienteService service;
 
-    public ClienteController(ClienteService service) { this.service = service; }
+    public ClienteController(ClienteService service) {
+        this.service = service; }
 
     @GetMapping
-    public List<Cliente> listar() { return service.listar(); }
+    public List<ClienteResponse> listar() {
+        return service.listar(); }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obter(@PathVariable Long id) {
-        Cliente c = service.obter(id);
-        return c != null ? ResponseEntity.ok(c) : ResponseEntity.notFound().build();
+    public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
+        ClienteResponse cliente = service.buscarPorId(id);
+        return cliente != null
+                ? ResponseEntity.ok(cliente)
+                : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> criar(@Valid @RequestBody Cliente c) {
-        return ResponseEntity.ok(service.salvar(c));
+    public ResponseEntity<ClienteResponse> criar(
+            @Valid @RequestBody ClienteRequest clienteRequest) {
+        return ResponseEntity.ok(service.salvar(clienteRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @Valid @RequestBody Cliente c) {
-        Cliente existente = service.obter(id);
-        if (existente == null) return ResponseEntity.notFound().build();
-        c.setId(id);
-        return ResponseEntity.ok(service.salvar(c));
+    public ResponseEntity<ClienteResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody ClienteRequest clienteRequest) {
+
+        ClienteResponse atualizado = service.atualizar(id, clienteRequest);
+
+        return atualizado != null
+                ? ResponseEntity.ok(atualizado)
+                : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")

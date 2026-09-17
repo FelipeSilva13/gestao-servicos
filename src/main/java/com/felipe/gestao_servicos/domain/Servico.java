@@ -1,9 +1,7 @@
 package com.felipe.gestao_servicos.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,5 +29,11 @@ public class Servico {
     @Column(precision = 12, scale = 2)
     private BigDecimal custo;
 
+    @Column(name = "tempo_estimado_minutos", nullable = false)
     private Integer tempoEstimadoMinutos;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
+
 }

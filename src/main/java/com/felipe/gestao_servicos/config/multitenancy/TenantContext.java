@@ -1,15 +1,15 @@
 package com.felipe.gestao_servicos.config.multitenancy;
 
 public class TenantContext {
-    private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
 
-    public static void setCurrentTenant(String tenant) {
-        CURRENT_TENANT.set(tenant);
+    private static final ThreadLocal<Long> CURRENT_TENANT = new ThreadLocal<>();
+
+    public static void setCurrentTenant(Long tenantId) {
+        CURRENT_TENANT.set(tenantId);
     }
 
-    public static String getCurrentTenant() {
-        String t = CURRENT_TENANT.get();
-        return t != null ? t : "default";
+    public static Long getCurrentTenant() {
+        return CURRENT_TENANT.get();
     }
 
     public static void clear() {

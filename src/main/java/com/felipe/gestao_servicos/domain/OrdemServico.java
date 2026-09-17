@@ -2,6 +2,7 @@ package com.felipe.gestao_servicos.domain;
 
 import com.felipe.gestao_servicos.enums.StatusOS;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,6 +36,8 @@ public class OrdemServico {
     @Enumerated(EnumType.STRING)
     private StatusOS status = StatusOS.PENDENTE;
 
+    @NotNull(message = "A data de criação é obrigstório")
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dataCriacao = LocalDateTime.now();
 
     private LocalDateTime dataInicio;
@@ -46,4 +49,8 @@ public class OrdemServico {
 
     @Column(precision = 12, scale = 2)
     private BigDecimal valorTotal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
 }

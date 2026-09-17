@@ -5,7 +5,7 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentifierResolver {
 
     @Override
-    public String resolveCurrentTenantIdentifier() {
+    public Long resolveCurrentTenantIdentifier() {
         return TenantContext.getCurrentTenant();
     }
 
