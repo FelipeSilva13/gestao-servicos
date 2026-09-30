@@ -2,9 +2,11 @@ package com.felipe.gestao_servicos.service;
 
 import com.felipe.gestao_servicos.config.multitenancy.TenantContext;
 import com.felipe.gestao_servicos.domain.Tecnico;
+import com.felipe.gestao_servicos.domain.Tenant;
 import com.felipe.gestao_servicos.dto.request.TecnicoRequest;
 import com.felipe.gestao_servicos.dto.response.TecnicoResponse;
 import com.felipe.gestao_servicos.repository.TecnicoRepository;
+import com.felipe.gestao_servicos.repository.TenantRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 @Service
 public class TecnicoService {
     private final TecnicoRepository repository;
+    private final TenantRepository tenantRepository;
 
-    public TecnicoService(TecnicoRepository repository) {
+    public TecnicoService(TecnicoRepository repository, TenantRepository tenantRepository) {
         this.repository = repository;
+        this.tenantRepository = tenantRepository;
     }
 
     private TecnicoResponse toResponse(Tecnico tecnico) {
@@ -29,7 +33,9 @@ public class TecnicoService {
     }
 
     public TecnicoResponse salvar(TecnicoRequest tecnicoRequest) {
+        Tenant tenant = tenantAtual();
         Tecnico tecnico = new Tecnico();
+
         tecnico.setNome(tecnicoRequest.nome());
         tecnico.setEmail(tecnicoRequest.email());
         tecnico.setTelefone(tecnicoRequest.telefone());
@@ -37,6 +43,7 @@ public class TecnicoService {
         tecnico.setDisponivel(tecnicoRequest.disponivel() != null
                 ? tecnicoRequest.disponivel()
                 : true);
+        tecnico.setTenant(tenant);
 
         return toResponse(repository.save(tecnico));
     }
@@ -88,5 +95,14 @@ public class TecnicoService {
         return tenantId != null
                 && tecnico.getTenant() != null
                 && tenantId.equals(tecnico.getTenant().getId());
+    }
+
+    private Tenant tenantAtual() {
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null) {
+            throw new IllegalStateException("Tenant atual não configurado");
+        }
+        return tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new IllegalStateException("Tenant não encontrado"));
     }
 }

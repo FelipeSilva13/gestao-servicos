@@ -26,7 +26,7 @@ public class Tecnico {
     @Size(max = 160)
     private String email;
 
-    @Size(max = 20)
+    @Size(max = 11)
     private String telefone;
 
     @Size(max = 100)
