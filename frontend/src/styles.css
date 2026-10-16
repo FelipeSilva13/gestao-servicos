@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #e9eef2;
+  background: #101923;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --page: #101923;
+  --panel: #14202b;
+  --field: #111b25;
+  --line: #2b3945;
+  --text: #e9eef2;
+  --muted: #a2b0ba;
+  --dim: #73838e;
+  --cyan: #21c4d7;
+  --yellow: #e6b354;
+  --red: #f1877b;
+  --green: #63c6a7;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 320px; min-height: 100%; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+button, input { font: inherit; }
+a { color: inherit; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+
+.registration-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(390px, .92fr) minmax(470px, 1.08fr);
+  background: var(--page);
+}
+
+.brand-panel {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 42px clamp(34px, 5.1vw, 78px) 28px;
+  border-right: 1px solid #26333e;
+  background-color: #14212b;
+  background-image: linear-gradient(rgba(222, 237, 241, .027) 1px, transparent 1px), linear-gradient(90deg, rgba(222, 237, 241, .027) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: reveal-panel .7s ease-out both;
+}
+
+.brand-panel::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(var(--cyan) 0 28%, transparent 28% 74%, var(--yellow) 74% 88%, transparent 88%);
+  opacity: .7;
+}
+
+.brand, .brand-name, .preview-topline, .preview-title, .preview-row, .preview-footer, .brand-footer,
+.signup-topline, .step-label, .submit-button, .signup-footer, .form-feedback a {
+  display: flex;
+  align-items: center;
+}
+
+.brand { position: relative; z-index: 1; width: fit-content; gap: 12px; text-decoration: none; }
+.brand-icon { width: 42px; height: 42px; display: grid; place-items: center; color: #09212a; background: var(--cyan); border-radius: 8px; }
+.brand-name { align-items: flex-start; flex-direction: column; gap: 2px; font-weight: 700; font-size: 16px; }
+.brand-name span { color: #8ca0aa; font-size: 9px; font-weight: 600; letter-spacing: 0; }
+
+.brand-copy { position: relative; z-index: 1; max-width: 530px; margin: auto 0 42px; padding-top: 70px; }
+.section-kicker, .step-label { color: var(--cyan); font-size: 10px; font-weight: 700; letter-spacing: 0; }
+.section-kicker { display: flex; align-items: center; gap: 9px; }
+.section-kicker span { width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); }
+.brand-copy h1 { margin: 25px 0 18px; max-width: 520px; font-family: Fraunces, Georgia, serif; font-size: clamp(34px, 4vw, 54px); font-weight: 500; line-height: 1.1; }
+.brand-copy h1 em { color: var(--cyan); font-weight: 500; }
+.brand-copy p { max-width: 390px; margin: 0; color: #a6b4bd; font-size: 15px; line-height: 1.8; }
+
+.operation-preview { position: relative; z-index: 1; margin: 0 0 36px; padding: 17px 19px 12px; border: 1px solid #33434e; background: rgba(13, 25, 34, .8); }
+.preview-topline, .preview-title, .preview-row, .preview-footer { justify-content: space-between; }
+.preview-topline { padding-bottom: 15px; color: #80919b; font-size: 8px; font-weight: 700; }
+.preview-topline span:first-child { display: flex; align-items: center; gap: 8px; color: #b9c5cb; }
+.preview-topline i { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+.preview-title { padding: 13px 0 10px; border-top: 1px solid #273640; color: #eff3f3; font-size: 12px; font-weight: 600; }
+.preview-title span { color: #81929d; font-size: 8px; font-weight: 500; }
+.preview-row { min-height: 39px; gap: 10px; border-top: 1px solid #273640; color: #b3c0c7; font-size: 9px; }
+.preview-number { color: var(--cyan); font-weight: 700; white-space: nowrap; }
+.preview-row b { min-width: 78px; text-align: right; font-size: 8px; font-weight: 600; }
+.preview-open { color: #61aef0; }
+.preview-progress { color: var(--yellow); }
+.preview-done { color: var(--green); }
+.preview-footer { padding-top: 12px; color: #82939e; font-size: 8px; }
+.preview-footer span:last-child { display: flex; align-items: center; gap: 5px; color: var(--cyan); }
+.brand-footer { position: relative; z-index: 1; justify-content: space-between; color: #81929c; font-size: 8px; font-weight: 600; }
+
+.signup-section { display: grid; place-items: center; min-height: 100vh; padding: 32px clamp(28px, 6vw, 92px); }
+.signup-content { width: min(100%, 460px); animation: rise-in .55s .08s ease-out both; }
+.signup-topline { justify-content: flex-end; gap: 13px; margin-bottom: 64px; color: #8797a1; font-size: 9px; font-weight: 700; }
+.signup-topline a, .form-feedback a { color: var(--cyan); text-decoration: none; font-size: 12px; font-weight: 700; }
+.signup-topline a { display: flex; align-items: center; gap: 4px; }
+.signup-topline a:hover, .form-feedback a:hover { color: #8be5ec; }
+.step-label { gap: 9px; color: #a4b2bb; }
+.step-label span { width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid #3d5962; border-radius: 50%; color: var(--cyan); font-size: 9px; }
+.form-heading h2 { margin: 20px 0 8px; color: #f1f3ef; font-family: Fraunces, Georgia, serif; font-size: 35px; font-weight: 500; }
+.form-heading p { max-width: 390px; margin: 0; color: #9caab3; font-size: 13px; line-height: 1.65; }
+
+.signup-form { margin-top: 31px; padding: 26px; border: 1px solid #2a3944; border-radius: 8px; background: #14202a; }
+.signup-form label { display: block; margin: 0 0 8px; color: #d7e0e3; font-size: 11px; font-weight: 600; }
+.signup-form input { width: 100%; height: 46px; padding: 0 13px; border: 1px solid #34434d; border-radius: 5px; background: var(--field); color: var(--text); font-size: 13px; transition: border-color .15s, box-shadow .15s; }
+.signup-form input::placeholder { color: #70808a; opacity: 1; }
+.signup-form input:focus { border-color: var(--cyan); outline: none; box-shadow: 0 0 0 3px rgba(33, 196, 215, .12); }
+.signup-form input + label, .password-field + label { margin-top: 19px; }
+.password-field { display: flex; align-items: center; height: 46px; padding-left: 12px; border: 1px solid #34434d; border-radius: 5px; background: var(--field); color: #85959e; }
+.password-field:focus-within { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(33, 196, 215, .12); }
+.password-field input { height: 100%; padding-left: 10px; border: 0; background: transparent; box-shadow: none; }
+.password-field input:focus { box-shadow: none; }
+.password-toggle { width: 42px; height: 42px; display: grid; flex: 0 0 42px; place-items: center; padding: 0; border: 0; background: transparent; color: #8798a2; cursor: pointer; }
+.password-toggle:hover { color: var(--cyan); }
+.form-feedback { margin-top: 16px; padding: 11px 13px; border: 1px solid; border-radius: 5px; font-size: 12px; line-height: 1.5; }
+.form-feedback p { margin: 0; }
+.form-feedback.erro { border-color: rgba(241, 135, 123, .4); background: rgba(135, 50, 45, .14); color: #f3aaa0; }
+.form-feedback.sucesso { border-color: rgba(99, 198, 167, .35); background: rgba(31, 110, 88, .14); color: #a3ddc9; }
+.form-feedback a { gap: 5px; margin-top: 8px; }
+.submit-button { width: 100%; min-height: 48px; justify-content: center; gap: 11px; margin-top: 21px; border: 0; border-radius: 5px; background: var(--cyan); color: #09232a; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s, transform .15s; }
+.submit-button:hover:not(:disabled) { background: #47d3df; transform: translateY(-1px); }
+.submit-button:disabled { cursor: wait; opacity: .7; }
+.privacy-note { margin: 14px 0 0; color: #82929c; font-size: 10px; line-height: 1.55; text-align: center; }
+.signup-footer { justify-content: space-between; gap: 12px; margin-top: 32px; color: #7d8d97; font-size: 8px; font-weight: 600; }
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes reveal-panel { from { opacity: .5; } to { opacity: 1; } }
+
+@media (max-width: 900px) {
+  .registration-page { grid-template-columns: minmax(330px, .85fr) minmax(430px, 1.15fr); }
+  .brand-panel { padding-right: 34px; padding-left: 34px; }
+  .brand-copy h1 { font-size: 38px; }
+  .signup-section { padding-right: 32px; padding-left: 32px; }
+}
+
+@media (max-width: 700px) {
+  .registration-page { display: block; }
+  .brand-panel { min-height: unset; padding: 22px 22px 0; border: 0; background-size: 32px 32px; }
+  .brand-panel::after { top: 0; right: 0; bottom: auto; left: 0; width: auto; height: 3px; background: linear-gradient(90deg, var(--cyan) 0 28%, transparent 28% 74%, var(--yellow) 74% 88%, transparent 88%); }
+  .brand-icon { width: 36px; height: 36px; }
+  .brand-copy { margin: 0; padding-top: 36px; }
+  .brand-copy h1 { max-width: 440px; margin: 14px 0 8px; font-size: clamp(27px, 7vw, 34px); }
+  .brand-copy p { max-width: 440px; font-size: 12px; }
+  .section-kicker { font-size: 8px; }
+  .operation-preview, .brand-footer { display: none; }
+  .signup-section { display: block; min-height: unset; padding: 29px 22px 28px; }
+  .signup-content { max-width: 480px; margin: 0 auto; }
+  .signup-topline { display: none; }
+  .form-heading h2 { margin-top: 14px; font-size: 30px; }
+  .form-heading p { font-size: 12px; }
+  .signup-form { margin-top: 22px; padding: 21px 18px; }
+  .signup-footer { margin-top: 23px; }
+}
+
+@media (max-width: 360px) {
+  .brand-panel { padding-right: 17px; padding-left: 17px; }
+  .signup-section { padding-right: 17px; padding-left: 17px; }
+  .signup-form { padding-right: 15px; padding-left: 15px; }
+  .signup-footer { font-size: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

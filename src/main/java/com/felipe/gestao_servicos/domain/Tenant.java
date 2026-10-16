@@ -10,7 +10,7 @@ public class Tenant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "nome", unique = true, nullable = false, length = 255)
     private String nome;
 
 

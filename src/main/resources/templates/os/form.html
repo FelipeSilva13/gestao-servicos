@@ -2,62 +2,31 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Nova OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova OS | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
-  </head>
+</head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a href="/tecnicos">Técnicos</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/servicos">Serviços</a>
-        <a class="active" href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('os')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Nova Ordem de Serviço</div>
+      <header th:replace="~{fragments/layout :: topbar('Ordens de Serviço')}"></header>
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title">Nova Ordem de Serviço</h1><p class="page-subtitle">Vincule cliente, técnico e serviço para abrir uma ordem.</p></div></div>
+        <section class="form-panel">
+          <div th:if="${param.error}" class="form-error" th:text="${param.error}"></div>
+          <form action="/os" method="post">
+            <div class="grid">
+              <label>Cliente<select name="cliente.id" required><option value="" disabled selected>Selecione um cliente</option><option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option></select></label>
+              <label>Técnico<select name="tecnico.id" required><option value="" disabled selected>Selecione um técnico</option><option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option></select></label>
+              <label>Serviço<select name="servico.id" required><option value="" disabled selected>Selecione um serviço</option><option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option></select></label>
+              <label>Status<select name="status" required><option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}" th:selected="${status == T(com.felipe.gestao_servicos.enums.StatusOS).PENDENTE}"></option></select></label>
+              <label>Observações<input type="text" name="observacoes" maxlength="500" placeholder="Detalhes importantes para a execução"></label>
+            </div>
+            <div class="form-actions"><button class="btn" type="submit">Criar ordem</button><a class="btn btn-secondary" href="/os">Cancelar</a></div>
+          </form>
+        </section>
       </div>
-
-      <div class="panel card">
-        <div th:if="${param.error}" class="alert alert-error" th:text="${param.error}"></div>
-        <form action="/os" method="post">
-          <div class="grid">
-            <label>Cliente:
-              <select name="cliente.id" required>
-                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
-              </select>
-            </label>
-            <label>Técnico:
-              <select name="tecnico.id" required>
-                <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option>
-              </select>
-            </label>
-            <label>Serviço:
-              <select name="servico.id" required>
-                <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option>
-              </select>
-            </label>
-            <label>Status:
-              <select name="status" required>
-                <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}"
-                        th:selected="${status == T(com.felipe.gestao_servicos.enums.StatusOS).PENDENTE}"></option>
-              </select>
-            </label>
-            <label>Observações:
-              <input type="text" name="observacoes">
-            </label>
-          </div>
-          <div class="actions">
-            <button class="btn" type="submit">Criar</button>
-            <a class="btn btn-secondary" href="/os">Voltar</a>
-          </div>
-        </form>
-      </div>
-
     </main>
   </div>
 </body>

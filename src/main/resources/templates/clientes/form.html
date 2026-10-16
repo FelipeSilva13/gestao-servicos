@@ -2,49 +2,29 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cliente | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a class="active" href="/clientes">Clientes</a>
-        <a href="/tecnicos">Técnicos</a>
-        <a href="/servicos">Serviços</a>
-        <a href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('clientes')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Cliente</div>
+      <header th:replace="~{fragments/layout :: topbar('Clientes')}"></header>
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title" th:text="${cliente.id} == null ? 'Novo Cliente' : 'Editar Cliente'">Cliente</h1><p class="page-subtitle">Dados de contato e identificação</p></div></div>
+        <section class="form-panel">
+          <form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
+            <div class="grid">
+              <label>Nome<input type="text" name="nome" th:value="${cliente.nome}" autocomplete="name" required></label>
+              <label>Email<input type="email" name="email" th:value="${cliente.email}" autocomplete="email" required></label>
+              <label>Telefone<input type="text" name="telefone" th:value="${cliente.telefone}" placeholder="(11) 91234-5678" autocomplete="tel" inputmode="tel"></label>
+              <label>Endereço<input type="text" name="endereco" th:value="${cliente.endereco}" autocomplete="street-address"></label>
+            </div>
+            <div class="form-actions"><button class="btn" type="submit">Salvar cliente</button><a class="btn btn-secondary" href="/clientes">Cancelar</a></div>
+          </form>
+        </section>
       </div>
-
-      <div class="panel card">
-        <form th:action="${cliente.id} == null ? '/clientes' : '/clientes/' + ${cliente.id}" method="post">
-          <div class="grid">
-            <label>Nome
-              <input type="text" name="nome" th:value="${cliente.nome}" required>
-            </label>
-            <label>Email
-              <input type="email" name="email" th:value="${cliente.email}" required>
-            </label>
-            <label>Telefone
-              <input type="text" name="telefone" th:value="${cliente.telefone}" placeholder="(11) 91234-5678">
-            </label>
-            <label>Endereço
-              <input type="text" name="endereco" th:value="${cliente.endereco}">
-            </label>
-          </div>
-          <div class="actions">
-            <button class="btn" type="submit">Salvar</button>
-            <a class="btn btn-secondary" href="/clientes">Voltar</a>
-          </div>
-        </form>
-      </div>
-
     </main>
   </div>
 </body>

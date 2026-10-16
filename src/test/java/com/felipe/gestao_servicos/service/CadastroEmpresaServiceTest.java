@@ -3,6 +3,8 @@ package com.felipe.gestao_servicos.service;
 import com.felipe.gestao_servicos.domain.Tenant;
 import com.felipe.gestao_servicos.domain.Usuario;
 import com.felipe.gestao_servicos.dto.request.CadastroEmpresaRequest;
+import com.felipe.gestao_servicos.dto.response.CadastroEmpresaResponse;
+import com.felipe.gestao_servicos.mapper.CadastroEmpresaMapper;
 import com.felipe.gestao_servicos.repository.TenantRepository;
 import com.felipe.gestao_servicos.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,6 +33,9 @@ public class CadastroEmpresaServiceTest {
 
     @Mock
     private PasswordEncoder authentication;
+
+    @Spy
+    private CadastroEmpresaMapper cadastroEmpresaMapper;
 
     @InjectMocks
     private CadastroEmpresaService cadastroEmpresaService;
@@ -59,12 +65,18 @@ public class CadastroEmpresaServiceTest {
 
         when(authentication.encode("123456"))
                 .thenReturn("senah-criptografada");
+        retornarUsuarioSalvo();
 
         //Act
-        cadastroEmpresaService.cadastrar(request);
+        CadastroEmpresaResponse response = cadastroEmpresaService.cadastrar(request);
 
         //Assert
+        assertEquals(1L, response.id());
+        assertEquals("Empresa Teste", response.nomeEmpresa());
+        assertEquals("empresa@gmail.com", response.emailAdministrador());
         verify(tenantRepository).save(any(Tenant.class));
+        verify(cadastroEmpresaMapper).toTenant("Empresa Teste");
+        verify(cadastroEmpresaMapper).toAdministrador("empresa@gmail.com", "senah-criptografada", "ROLE_ADMIN", tenant);
 
         verify(authentication).encode("123456");
 
@@ -120,6 +132,7 @@ public class CadastroEmpresaServiceTest {
                 .thenReturn(tenant);
         when(authentication.encode("123456"))
                 .thenReturn("senah-criptografada");
+        retornarUsuarioSalvo();
 
         //Act
         cadastroEmpresaService.cadastrar(request);
@@ -165,6 +178,7 @@ public class CadastroEmpresaServiceTest {
 
         when(authentication.encode("123456"))
                 .thenReturn("senah-criptografada");
+        retornarUsuarioSalvo();
 
         //Act
         cadastroEmpresaService.cadastrar(request);
@@ -179,9 +193,49 @@ public class CadastroEmpresaServiceTest {
 
     }
 
+        @Test
+        void mapperDeveRetornarSomenteDadosPublicosDaEmpresa() {
+                Tenant tenant = new Tenant();
+                tenant.setId(42L);
+                tenant.setNome("Empresa Mapeada");
+
+                Usuario administrador = new Usuario();
+                administrador.setEmail("admin@empresa.com");
+                administrador.setSenha("senha-criptografada");
+
+                CadastroEmpresaResponse response = new CadastroEmpresaMapper().toResponse(tenant, administrador);
+
+                assertEquals(42L, response.id());
+                assertEquals("Empresa Mapeada", response.nomeEmpresa());
+                assertEquals("admin@empresa.com", response.emailAdministrador());
+        }
+
     @Test
     void deveAssociarAdministradorAoTenantCriado(){
 
-        //Arrange
+        CadastroEmpresaRequest request = new CadastroEmpresaRequest(
+                "Empresa Associada",
+                "admin@associada.com",
+                "123456");
+        Tenant tenant = new Tenant();
+        tenant.setId(9L);
+        tenant.setNome("Empresa Associada");
+
+        when(tenantRepository.existsByNomeIgnoreCase("Empresa Associada")).thenReturn(false);
+        when(usuarioRepository.findByEmail("admin@associada.com")).thenReturn(Optional.empty());
+        when(tenantRepository.save(any(Tenant.class))).thenReturn(tenant);
+        when(authentication.encode("123456")).thenReturn("senha-criptografada");
+        retornarUsuarioSalvo();
+
+        cadastroEmpresaService.cadastrar(request);
+
+        ArgumentCaptor<Usuario> usuarioCaptor = ArgumentCaptor.forClass(Usuario.class);
+        verify(usuarioRepository).save(usuarioCaptor.capture());
+        assertSame(tenant, usuarioCaptor.getValue().getTenant());
+    }
+
+    private void retornarUsuarioSalvo() {
+        when(usuarioRepository.save(any(Usuario.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 }

@@ -2,52 +2,30 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Técnico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Técnico | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-<script th:src="@{/js/telefone.js}"></script>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a class="active" href="/tecnicos">Técnicos</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/servicos">Serviços</a>
-        <a href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('tecnicos')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Técnico</div>
+      <header th:replace="~{fragments/layout :: topbar('Técnicos')}"></header>
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title" th:text="${tecnico.id} == null ? 'Novo Técnico' : 'Editar Técnico'">Técnico</h1><p class="page-subtitle">Dados de contato e especialidade</p></div></div>
+        <section class="form-panel">
+          <form class="grid" th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
+            <label>Nome<input type="text" name="nome" th:value="${tecnico.nome}" autocomplete="name" required></label>
+            <label>Email<input type="email" name="email" th:value="${tecnico.email}" autocomplete="email" required></label>
+            <label>Telefone<input type="tel" name="telefone" th:value="${tecnico.telefone}" placeholder="(11) 98765-4321" maxlength="11" inputmode="numeric" autocomplete="tel"></label>
+            <label>Especialidade<input type="text" name="especialidade" th:value="${tecnico.especialidade}"></label>
+            <label>Disponível<input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}"></label>
+            <div class="form-actions"><button class="btn" type="submit">Salvar técnico</button><a class="btn btn-secondary" href="/tecnicos">Cancelar</a></div>
+          </form>
+        </section>
       </div>
-
-      <div class="panel card">
-        <form class="grid" th:action="${tecnico.id} == null ? '/tecnicos' : '/tecnicos/' + ${tecnico.id}" method="post">
-          <label>Nome
-            <input type="text" name="nome" th:value="${tecnico.nome}" required>
-          </label>
-          <label>Email
-            <input type="email" name="email" th:value="${tecnico.email}" required>
-          </label>
-          <label>Telefone
-            <input type="text" name="telefone" th:value="${tecnico.telefone}" placeholder="(11) 98765-4321" maxlength="11" inputmode="numeric">
-          </label>
-          <label>Especialidade
-            <input type="text" name="especialidade" th:value="${tecnico.especialidade}">
-          </label>
-          <label style="align-items:center;display:flex;gap:8px">Disponível
-            <input type="checkbox" name="disponivel" th:checked="${tecnico.disponivel}">
-          </label>
-          <div class="actions">
-            <button class="btn" type="submit">Salvar</button>
-            <a class="btn btn-secondary" href="/tecnicos">Voltar</a>
-          </div>
-        </form>
-      </div>
-
     </main>
   </div>
+  <script th:src="@{/js/telefone.js}"></script>
 </body>
 </html>
