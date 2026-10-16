@@ -2,47 +2,27 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Serviço</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serviço | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a href="/tecnicos">Técnicos</a>
-        <a href="/clientes">Clientes</a>
-        <a class="active" href="/servicos">Serviços</a>
-        <a href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('servicos')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Serviço</div>
+      <header th:replace="~{fragments/layout :: topbar('Serviços')}"></header>
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title" th:text="${servico.id} == null ? 'Novo Serviço' : 'Editar Serviço'">Serviço</h1><p class="page-subtitle">Descrição, preço e duração do serviço</p></div></div>
+        <section class="form-panel">
+          <form class="grid" th:action="${servico.id} == null ? '/servicos' : '/servicos/' + ${servico.id}" method="post">
+            <label>Descrição<input type="text" name="descricao" th:value="${servico.descricao}" required></label>
+            <label>Tipo<input type="text" name="tipo" th:value="${servico.tipo}"></label>
+            <label>Custo<input type="number" step="0.01" min="0" name="custo" th:value="${servico.custo}" inputmode="decimal"></label>
+            <label>Tempo estimado (minutos)<input type="number" min="1" name="tempoEstimadoMinutos" th:value="${servico.tempoEstimadoMinutos}" required></label>
+            <div class="form-actions"><button class="btn" type="submit">Salvar serviço</button><a class="btn btn-secondary" href="/servicos">Cancelar</a></div>
+          </form>
+        </section>
       </div>
-
-      <div class="panel card">
-        <form class="grid" th:action="${servico.id} == null ? '/servicos' : '/servicos/' + ${servico.id}" method="post">
-          <label>Descrição
-            <input type="text" name="descricao" th:value="${servico.descricao}" required>
-          </label>
-          <label>Tipo
-            <input type="text" name="tipo" th:value="${servico.tipo}">
-          </label>
-          <label>Custo
-            <input type="number" step="0.01" name="custo" th:value="${servico.custo}">
-          </label>
-          <label>Tempo Estimado (minutos)
-            <input type="text" name="tempoEstimadoMinutos" th:value="${servico.tempoEstimadoMinutos}">
-          </label>
-          <div class="actions">
-            <button class="btn" type="submit">Salvar</button>
-            <a class="btn btn-secondary" href="/servicos">Voltar</a>
-          </div>
-        </form>
-      </div>
-
     </main>
   </div>
 </body>

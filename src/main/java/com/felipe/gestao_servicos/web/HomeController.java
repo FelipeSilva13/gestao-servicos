@@ -32,7 +32,7 @@ public class HomeController {
     public String index(Model model) {
         Long tenantId = TenantContext.getCurrentTenant();
         if (tenantId == null) {
-            throw new IllegalStateException("Tenant atual não configurado");
+            return "redirect:/registro";
         }
 
         model.addAttribute("totalTecnicos", tecnicoRepository.countByTenant_Id(tenantId));

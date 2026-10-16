@@ -2,45 +2,43 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Ordens de Serviço</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ordens de Serviço | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a href="/tecnicos">Técnicos</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/servicos">Serviços</a>
-        <a class="active" href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('os')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Ordens de Serviço</div>
-        <div class="actions"><a class="btn" href="/os/nova">+ Nova OS</a></div>
-      </div>
-
-      <div class="panel">
-        <div th:each="o : ${ordens}" class="list-row">
-          <div>
-            <div class="list-title" th:text="${o.cliente != null ? o.cliente.nome : ''}"></div>
-            <div class="muted" th:text="'OS-' + ${o.id} + ' · ' + ${#temporals.format(o.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
-          </div>
-          <div style="text-align:right">
-            <div class="muted" th:text="${o.servico != null ? o.servico.descricao : ''}"></div>
-            <form th:action="@{/os/{id}/status(id=${o.id})}" method="post" style="margin-top:8px">
-              <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço">
-                <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}"
-                        th:selected="${status == o.status}"></option>
-              </select>
-            </form>
-          </div>
+      <header th:replace="~{fragments/layout :: topbar('Ordens de Serviço')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Ordens de Serviço</h1><p class="page-subtitle" th:text="|${#lists.size(ordens)} ordens registradas|">Ordens registradas</p></div>
+          <div class="actions"><a class="btn" href="/os/nova"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nova OS</a></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Nº OS</th><th>Cliente</th><th>Técnico</th><th>Serviço</th><th>Status</th><th>Abertura</th></tr></thead>
+            <tbody>
+              <tr th:each="o : ${ordens}">
+                <td class="accent-cell" th:text="${'OS-' + #numbers.formatInteger(o.id, 3)}">OS-001</td>
+                <td class="primary-cell" th:text="${o.cliente != null ? o.cliente.nome : ''}">Cliente</td>
+                <td th:text="${o.tecnico != null ? o.tecnico.nome : ''}">Técnico</td>
+                <td class="muted-cell" th:text="${o.servico != null ? o.servico.descricao : ''}">Serviço</td>
+                <td>
+                  <form th:action="@{/os/{id}/status(id=${o.id})}" method="post">
+                    <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço">
+                      <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}" th:selected="${status == o.status}"></option>
+                    </select>
+                  </form>
+                </td>
+                <td class="muted-cell" th:text="${#temporals.format(o.dataCriacao, 'dd/MM/yyyy')}">01/08/2026</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(ordens)}"><td colspan="6" class="empty-state">Nenhuma ordem de serviço cadastrada.</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-
     </main>
   </div>
 </body>

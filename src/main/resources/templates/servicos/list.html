@@ -2,53 +2,36 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Serviços</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serviços | GestãoOS</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo"><div class="badge">GS</div><div class="name">GestãoOS</div></div>
-      <nav class="menu">
-        <a href="/">Dashboard</a>
-        <a href="/tecnicos">Técnicos</a>
-        <a href="/clientes">Clientes</a>
-        <a class="active" href="/servicos">Serviços</a>
-        <a href="/os">Ordens de Serviço</a>
-      </nav>
-    </aside>
+    <aside th:replace="~{fragments/layout :: sidebar('servicos')}"></aside>
     <main class="main">
-      <div class="page-header">
-        <div class="page-title">Serviços</div>
-        <div class="actions"><a class="btn" href="/servicos/novo">+ Novo Serviço</a></div>
-      </div>
-
-      <div class="service-grid">
-        <div th:each="s : ${servicos}" class="service-card">
-          <h4 th:text="${s.descricao}"></h4>
-          <p th:text="${s.tipo}"></p>
-          <div style="display:flex;justify-content:space-between;margin-top:12px">
-            <div><strong th:text="${'R$ ' + s.custo}"></strong></div><br>
-            <div class="muted" th:text="${s.tempoEstimadoMinutos + ' min'}"></div><br>
-          </div>
-            <div class="actions">
-                <a class="btn"
-                   th:href="@{/servicos/{id}/editar(id=${s.id})}">
-                    Editar
-                </a>
-
-                <form th:action="@{/servicos/{id}/excluir(id=${s.id})}"
-                      method="post">
-
-                    <button class="btn btn-secondary" type="submit">
-                        Excluir
-                    </button>
-
-                </form>
+      <header th:replace="~{fragments/layout :: topbar('Serviços')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Serviços</h1><p class="page-subtitle" th:text="|${#lists.size(servicos)} serviços cadastrados|">Serviços cadastrados</p></div>
+          <div class="actions"><a class="btn" href="/servicos/novo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo Serviço</a></div>
+        </div>
+        <div th:if="${#lists.isEmpty(servicos)}" class="panel empty-state">Nenhum serviço cadastrado.</div>
+        <div class="service-grid">
+          <article th:each="s : ${servicos}" class="service-card">
+            <h4 th:text="${s.descricao}">Descrição do serviço</h4>
+            <p th:text="${s.tipo}">Tipo de serviço</p>
+            <div class="service-meta">
+              <div><small>Preço</small><span th:text="${'R$ ' + s.custo}">R$ 0,00</span></div>
+              <div><small>Duração</small><span th:text="${s.tempoEstimadoMinutos + ' h'}">0 h</span></div>
             </div>
+            <div class="actions">
+              <a class="btn btn-secondary" th:href="@{/servicos/{id}/editar(id=${s.id})}">Editar</a>
+              <form th:action="@{/servicos/{id}/excluir(id=${s.id})}" method="post"><button class="btn btn-danger" type="submit">Excluir</button></form>
+            </div>
+          </article>
         </div>
       </div>
-
     </main>
   </div>
 </body>
