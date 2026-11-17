@@ -1,0 +1,9 @@
+target/
+frontend/node_modules/
+uploads/
+.git/
+.idea/
+.vscode/
+.claude/
+docker-stack/.env
+docker-stack/data/

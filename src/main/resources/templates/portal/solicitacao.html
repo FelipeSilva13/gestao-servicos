@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova solicitação | Portal do Cliente</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/portal :: sidebar('solicitacao')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/portal :: topbar('Nova solicitação')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Solicitar atendimento</h1>
+            <p class="page-subtitle">Conte o que está acontecendo. A empresa analisa e envia um orçamento para sua aprovação.</p>
+          </div>
+        </div>
+        <section class="form-panel">
+          <div th:if="${erro}" class="form-error" role="alert" th:text="${erro}"></div>
+          <form action="/portal/solicitacoes" method="post" enctype="multipart/form-data">
+            <label>O que você precisa? *
+              <textarea name="descricao" required maxlength="2000" rows="5"
+                        placeholder="Ex.: O ar-condicionado da sala está pingando água e fazendo barulho desde ontem."
+                        th:text="${descricao}"></textarea>
+            </label>
+            <div class="grid" style="margin-top:16px">
+              <label>Tipo de serviço (opcional)
+                <select name="servicoId">
+                  <option value="">Não sei / outro</option>
+                  <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}">Serviço</option>
+                </select>
+              </label>
+              <label>Data e horário de preferência (opcional)
+                <input type="datetime-local" name="dataPreferida">
+                <span class="hint">A empresa confirma ou propõe outro horário.</span>
+              </label>
+            </div>
+            <label style="margin-top:16px">Fotos, vídeos ou documentos (opcional)
+              <input type="file" name="arquivos" multiple th:attr="accept=${extensoesAceitas}">
+              <span class="hint">Até 25 MB por arquivo. Imagens, vídeos, PDF e documentos do Office.</span>
+            </label>
+            <div class="form-actions">
+              <button class="btn" type="submit">Enviar solicitação</button>
+              <a class="btn btn-secondary" href="/portal">Cancelar</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+</body>
+</html>

@@ -20,7 +20,7 @@
               <label>Cliente<select name="cliente.id" required><option value="" disabled selected>Selecione um cliente</option><option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option></select></label>
               <label>Técnico<select name="tecnico.id" required><option value="" disabled selected>Selecione um técnico</option><option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"></option></select></label>
               <label>Serviço<select name="servico.id" required><option value="" disabled selected>Selecione um serviço</option><option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"></option></select></label>
-              <label>Status<select name="status" required><option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}" th:selected="${status == T(com.felipe.gestao_servicos.enums.StatusOS).PENDENTE}"></option></select></label>
+              <label>Status<select name="status" required><option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status.label}" th:selected="${status == T(com.felipe.gestao_servicos.enums.StatusOS).PENDENTE}"></option></select></label>
               <label>Observações<input type="text" name="observacoes" maxlength="500" placeholder="Detalhes importantes para a execução"></label>
             </div>
             <div class="form-actions"><button class="btn" type="submit">Criar ordem</button><a class="btn btn-secondary" href="/os">Cancelar</a></div>

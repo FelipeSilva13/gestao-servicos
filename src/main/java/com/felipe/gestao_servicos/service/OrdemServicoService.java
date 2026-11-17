@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.felipe.gestao_servicos.config.multitenancy.TenantContext;
 import com.felipe.gestao_servicos.domain.Cliente;
@@ -28,10 +29,12 @@ public class OrdemServicoService {
     private final TecnicoRepository tecnicoRepository;
     private final ClienteRepository clienteRepository;
     private final TenantRepository tenantRepository;
+    private final EventoOrdemService eventos;
 
     public OrdemServicoService(
             OrdemServicoRepository repository,ServicoRepository servicoRepository, TecnicoRepository tecnicoRepository, ClienteRepository clienteRepository,
-           TenantRepository tenantRepository ) {
+           TenantRepository tenantRepository, EventoOrdemService eventos) {
+        this.eventos = eventos;
         this.repository = repository;
         this.servicoRepository = servicoRepository;
         this.clienteRepository = clienteRepository;
@@ -43,8 +46,8 @@ public class OrdemServicoService {
 
         return new OrdemResponse(
                 ordemServico.getCliente().getId(),
-                ordemServico.getTecnico().getId(),
-                ordemServico.getServico().getId(),
+                ordemServico.getTecnico() != null ? ordemServico.getTecnico().getId() : null,
+                ordemServico.getServico() != null ? ordemServico.getServico().getId() : null,
                 ordemServico.getStatus(),
                 ordemServico.getDataCriacao(),
                 ordemServico.getDataInicio(),
@@ -83,6 +86,7 @@ public class OrdemServicoService {
         ordemServico.setValorTotal(request.valorTotal());
 
         OrdemServico salvo = repository.save(ordemServico);
+        eventos.registrar(salvo, "Ordem de serviço aberta pela empresa", EventoOrdemService.Destino.CLIENTE);
 
         return toResponse(salvo);
     }
@@ -134,22 +138,103 @@ public class OrdemServicoService {
         }
         repository.deleteById(id); }
 
+    @Transactional
     public OrdemServico atualizarStatus(Long id, StatusOS status) {
         OrdemServico os = buscarPorId(id);
         if (os == null) return null;
+        if (status == os.getStatus()) return os;
         if (status == StatusOS.EM_EXECUCAO && os.getDataInicio() == null) {
             os.setDataInicio(LocalDateTime.now());
         }
         if (status == StatusOS.FINALIZADA && os.getDataFim() == null) {
             os.setDataFim(LocalDateTime.now());
-            if (os.getServico() != null && os.getServico().getCusto() != null) {
-                os.setValorTotal(os.getServico().getCusto());
-            } else {
-                os.setValorTotal(BigDecimal.ZERO);
+            if (os.getValorTotal() == null) {
+                if (os.getOrcamentoValor() != null && os.getOrcamentoRespondidoEm() != null) {
+                    os.setValorTotal(os.getOrcamentoValor());
+                } else if (os.getServico() != null && os.getServico().getCusto() != null) {
+                    os.setValorTotal(os.getServico().getCusto());
+                } else {
+                    os.setValorTotal(BigDecimal.ZERO);
+                }
             }
         }
         os.setStatus(status);
-        return repository.save(os);
+        OrdemServico salvo = repository.save(os);
+        String descricao = status == StatusOS.FINALIZADA
+                ? "Atendimento concluído. Conte como foi avaliando o serviço."
+                : "Status alterado para " + status.getLabel();
+        eventos.registrar(salvo, descricao, EventoOrdemService.Destino.CLIENTE);
+        return salvo;
+    }
+
+    /** Atribui técnico e/ou serviço (usado na triagem das solicitações do portal). */
+    @Transactional
+    public OrdemServico atribuir(Long id, Long tecnicoId, Long servicoId) {
+        Long tenantId = tenantIdAtual();
+        OrdemServico os = buscarObrigatoria(id);
+        Tecnico tecnico = tecnicoId == null ? null : tecnicoRepository.findByIdAndTenant_Id(tecnicoId, tenantId)
+                .orElseThrow(() -> new RegraNegocioException("Técnico não encontrado"));
+        Servico servico = servicoId == null ? null : servicoRepository.findByIdAndTenant_Id(servicoId, tenantId)
+                .orElseThrow(() -> new RegraNegocioException("Serviço não encontrado"));
+
+        boolean trocouTecnico = tecnico != null && (os.getTecnico() == null || !tecnico.getId().equals(os.getTecnico().getId()));
+        os.setTecnico(tecnico);
+        os.setServico(servico);
+        OrdemServico salvo = repository.save(os);
+        if (trocouTecnico) {
+            eventos.registrar(salvo, "Técnico responsável: " + tecnico.getNome(), EventoOrdemService.Destino.CLIENTE);
+        }
+        return salvo;
+    }
+
+    /** Envia (ou reenvia) o orçamento para aprovação do cliente. */
+    @Transactional
+    public OrdemServico enviarOrcamento(Long id, BigDecimal valor, String descricao) {
+        OrdemServico os = buscarObrigatoria(id);
+        if (os.getStatus() == StatusOS.EM_EXECUCAO || os.getStatus().isEncerrado() && os.getStatus() != StatusOS.RECUSADA) {
+            throw new RegraNegocioException("Não é possível enviar orçamento para uma ordem " + os.getStatus().getLabel().toLowerCase());
+        }
+        if (valor == null || valor.signum() < 0) {
+            throw new RegraNegocioException("Informe um valor de orçamento válido");
+        }
+        os.setOrcamentoValor(valor);
+        os.setOrcamentoDescricao(descricao == null || descricao.isBlank() ? null : descricao.trim());
+        os.setOrcamentoEnviadoEm(LocalDateTime.now());
+        os.setOrcamentoRespondidoEm(null);
+        os.setOrcamentoMotivoRecusa(null);
+        os.setStatus(StatusOS.AGUARDANDO_APROVACAO);
+        OrdemServico salvo = repository.save(os);
+        eventos.registrar(salvo, "Orçamento de R$ " + String.format(java.util.Locale.of("pt", "BR"), "%,.2f", valor)
+                + " enviado para sua aprovação", EventoOrdemService.Destino.CLIENTE);
+        return salvo;
+    }
+
+    /** Define a data do atendimento; confirmada = a empresa garante o horário. */
+    @Transactional
+    public OrdemServico agendar(Long id, LocalDateTime dataHora, boolean confirmado) {
+        OrdemServico os = buscarObrigatoria(id);
+        if (dataHora == null) {
+            throw new RegraNegocioException("Informe a data e hora do atendimento");
+        }
+        os.setDataAgendada(dataHora);
+        os.setAgendamentoConfirmado(confirmado);
+        OrdemServico salvo = repository.save(os);
+        String quando = dataHora.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));
+        eventos.registrar(salvo, (confirmado ? "Atendimento confirmado para " : "Nova data proposta para o atendimento: ") + quando,
+                EventoOrdemService.Destino.CLIENTE);
+        return salvo;
+    }
+
+    public OrdemServico buscarObrigatoria(Long id) {
+        OrdemServico os = buscarPorId(id);
+        if (os == null) {
+            throw new RecursoNaoEncontradoException("Ordem de serviço não encontrada");
+        }
+        return os;
+    }
+
+    public List<OrdemServico> listarEntidadesRecentes() {
+        return repository.findAllByTenant_IdOrderByDataCriacaoDesc(tenantIdAtual());
     }
 
 

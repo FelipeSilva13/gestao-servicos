@@ -33,3 +33,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Anexos enviados em ambiente local ###
+uploads/
+
+### Dados locais do Postgres (docker-stack) ###
+docker-stack/data/

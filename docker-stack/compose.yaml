@@ -13,7 +13,7 @@ services:
      POSTGRES_DB: gestao_servicos
 
     volumes:
-      - gestao_servicos-data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d gestao_servicos"]
@@ -32,8 +32,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/gestao_servicos
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      SPRING_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "true"
       APP_CORS_ALLOWED_ORIGINS: http://localhost:3003,http://localhost:5176,http://localhost:4176
+      UPLOADS_DIR: /app/uploads
+
+    volumes:
+      - gestao_servicos-uploads:/app/uploads
 
     ports:
       - "8080:8080"
@@ -44,4 +48,4 @@ services:
 
 
 volumes:
-  gestao_servicos-data:
+  gestao_servicos-uploads:

@@ -34,4 +34,10 @@ public class Usuario {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    /** Preenchido apenas para usuários do portal do cliente (ROLE_CLIENTE). */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    @JsonIgnore
+    private Cliente cliente;
+
 }

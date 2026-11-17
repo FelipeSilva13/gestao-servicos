@@ -25,12 +25,14 @@ public class OrdemServico {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "tecnico_id", nullable = false)
+    /** Pode ficar vazio enquanto a solicitação do cliente não for atribuída. */
+    @ManyToOne
+    @JoinColumn(name = "tecnico_id")
     private Tecnico tecnico;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "servico_id", nullable = false)
+    /** Pode ficar vazio enquanto a solicitação do cliente não for triada. */
+    @ManyToOne
+    @JoinColumn(name = "servico_id")
     private Servico servico;
 
     @Enumerated(EnumType.STRING)
@@ -53,4 +55,34 @@ public class OrdemServico {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
+
+    /** Descrição do problema informada pelo cliente ao abrir a solicitação. */
+    @Column(name = "descricao_problema", length = 2000)
+    private String descricaoProblema;
+
+    @Column(name = "orcamento_valor", precision = 12, scale = 2)
+    private BigDecimal orcamentoValor;
+
+    @Column(name = "orcamento_descricao", length = 2000)
+    private String orcamentoDescricao;
+
+    @Column(name = "orcamento_enviado_em")
+    private LocalDateTime orcamentoEnviadoEm;
+
+    @Column(name = "orcamento_respondido_em")
+    private LocalDateTime orcamentoRespondidoEm;
+
+    @Column(name = "orcamento_motivo_recusa", length = 500)
+    private String orcamentoMotivoRecusa;
+
+    /** Data/hora do atendimento: sugerida pelo cliente ou definida pela empresa. */
+    @Column(name = "data_agendada")
+    private LocalDateTime dataAgendada;
+
+    @Column(name = "agendamento_confirmado", nullable = false)
+    private boolean agendamentoConfirmado = false;
+
+    public String getNumero() {
+        return id == null ? "OS-nova" : "OS-" + String.format("%03d", id);
+    }
 }

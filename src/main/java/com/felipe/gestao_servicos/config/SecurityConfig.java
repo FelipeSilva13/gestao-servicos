@@ -37,9 +37,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/", "/login", "/registro", "/api/empresas/**", "/empresa/**", "/css/**").permitAll()
+                    .requestMatchers("/", "/login", "/registro", "/api/empresas/**", "/empresa/**", "/css/**", "/js/**").permitAll()
+                    // Portal do cliente
+                    .requestMatchers("/portal/**").hasRole("CLIENTE")
+                    // Compartilhados: cada serviço valida a quem pertence o recurso
+                    .requestMatchers("/notificacoes/**", "/anexos/**").authenticated()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
+                    // Demais rotas (telas internas e API) são exclusivas da equipe da empresa
+                    .anyRequest().hasAnyRole("ADMIN", "USER")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

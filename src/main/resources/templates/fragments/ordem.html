@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Etapas do atendimento -->
+<section th:fragment="etapas(ordem)" class="panel">
+  <div class="panel-heading">
+    <span>Andamento</span>
+    <span class="badge" th:classappend="${' ' + ordem.status.tom}" th:text="${ordem.status.label}">Status</span>
+  </div>
+  <div class="panel-body" th:if="${ordem.status.etapa == 0}">
+    <div class="aviso danger" th:text="${ordem.status.name() == 'CANCELADA'} ? 'Esta solicitação foi cancelada.' : 'O orçamento desta ordem foi recusado.'">Interrompida</div>
+  </div>
+  <ol class="stepper" th:unless="${ordem.status.etapa == 0}" aria-label="Etapas do atendimento">
+    <li th:each="nome, it : ${ {'Recebida', 'Orçamento', 'Aprovada', 'Em execução', 'Concluída'} }"
+        th:with="n=${it.count}, etapa=${ordem.status.etapa}"
+        th:classappend="${n < etapa or etapa == 5} ? ' feito' : (${n == etapa} ? ' atual' : '')"
+        th:attr="aria-current=${n == etapa} ? 'step' : null">
+      <span class="dot" th:text="${n}">1</span><span th:text="${nome}">Etapa</span>
+    </li>
+  </ol>
+</section>
+
+<!-- Linha do tempo -->
+<section th:fragment="historico(historico)" class="panel">
+  <div class="panel-heading"><span>Histórico</span></div>
+  <ol class="timeline" th:unless="${#lists.isEmpty(historico)}">
+    <li th:each="h : ${historico}">
+      <div class="quando"><span th:text="${#temporals.format(h.data, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</span></div>
+      <div class="o-que" th:text="${h.descricao}">Evento</div>
+    </li>
+  </ol>
+  <div th:if="${#lists.isEmpty(historico)}" class="empty-state">Sem eventos registrados.</div>
+</section>
+
+<!-- Arquivos anexados + envio -->
+<section th:fragment="anexos(anexos, acaoUpload, podeEnviar)" class="panel">
+  <div class="panel-heading"><span>Arquivos</span><span class="muted" th:text="|${#lists.size(anexos)} anexos|">0 anexos</span></div>
+  <div class="panel-body">
+    <div class="anexos" th:unless="${#lists.isEmpty(anexos)}">
+      <a th:each="a : ${anexos}" class="anexo" th:href="@{/anexos/{id}(id=${a.id})}" target="_blank" rel="noopener">
+        <span class="thumb">
+          <img th:if="${a.imagem and a.contentType != 'image/heic'}" th:src="@{/anexos/{id}(id=${a.id})}" th:alt="${a.nomeOriginal}" loading="lazy">
+          <video th:if="${a.video}" th:src="@{/anexos/{id}(id=${a.id})}" preload="metadata" muted></video>
+          <span th:unless="${(a.imagem and a.contentType != 'image/heic') or a.video}" th:text="${#strings.substringAfter(a.contentType, '/').length() > 6 ? 'DOC' : #strings.substringAfter(a.contentType, '/')}">PDF</span>
+        </span>
+        <span class="nome"><span th:text="${a.nomeOriginal}">arquivo.pdf</span>
+          <small th:text="|${a.tamanhoFormatado} · ${a.enviadoPor}|">1 MB</small></span>
+      </a>
+    </div>
+    <p th:if="${#lists.isEmpty(anexos)}" class="muted">Nenhum arquivo anexado.</p>
+    <form th:if="${podeEnviar}" th:action="${acaoUpload}" method="post" enctype="multipart/form-data" style="margin-top:14px">
+      <label>Adicionar fotos, vídeos ou documentos
+        <input type="file" name="arquivos" multiple required th:attr="accept=${extensoesAceitas}">
+      </label>
+      <div class="form-actions"><button class="btn btn-secondary" type="submit">Enviar arquivos</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- Nota em estrelas (somente leitura) -->
+<span th:fragment="nota(valor)" class="nota" th:attr="aria-label=|${valor} de 5|"
+      th:text="${#strings.repeat('★', valor) + #strings.repeat('☆', 5 - valor)}">★★★★☆</span>
+
+<!-- Seletor de nota em estrelas -->
+<span th:fragment="seletorNota(nome)" class="estrelas" role="radiogroup">
+  <th:block th:each="n : ${#numbers.sequence(5, 1, -1)}">
+    <input type="radio" th:name="${nome}" th:id="${nome + n}" th:value="${n}">
+    <label th:for="${nome + n}" th:title="|${n} de 5|">★<span class="visually-hidden" th:text="|${n} de 5|"></span></label>
+  </th:block>
+</span>
+
+</body>
+</html>

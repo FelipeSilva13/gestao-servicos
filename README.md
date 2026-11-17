@@ -11,6 +11,21 @@ Aplicação web para organizar a operação de empresas prestadoras de serviços
 - Registro de empresa com criação do primeiro usuário administrador e autenticação por formulário.
 - Interface web com Thymeleaf e endpoints REST em `/api`.
 
+### Portal do Cliente (`/portal`)
+
+A empresa libera o acesso em **Clientes → cadeado** (login = e-mail do cliente). No portal, o cliente:
+
+| Funcionalidade | Como funciona |
+| --- | --- |
+| Acompanhamento de serviços | Etapas e linha do tempo da OS; a página se atualiza sozinha quando algo muda. |
+| Solicitação de atendimento | Abre uma OS com status `SOLICITADA`, que aparece para a equipe triar. |
+| Aprovação de orçamento | A empresa envia o orçamento no detalhe da OS; o cliente aprova (`PENDENTE`) ou recusa (`RECUSADA`). |
+| Histórico de serviços | Lista de todas as ordens do cliente, com filtros. |
+| Envio de arquivos | Fotos, vídeos, PDF e documentos do Office (até 25 MB cada), salvos em `UPLOADS_DIR`. |
+| Avaliação do atendimento | Após a conclusão, nota de 1 a 5 para o serviço e para o técnico; a média aparece em Técnicos. |
+| Notificações | Sino com avisos a cada mudança de status, orçamento, agenda ou anexo (cliente e equipe). |
+| Agendamento | O cliente sugere a data; a empresa confirma ou propõe outra. |
+
 ## Tecnologias
 
 | Área | Tecnologias |
@@ -29,8 +44,8 @@ O backend segue uma organização em camadas dentro de `com.felipe.gestao_servic
 
 ```text
 config/       Segurança e contexto de multitenancy
-controller/   Endpoints REST e autenticação
-web/          Controllers das páginas Thymeleaf
+controller/   Endpoints que respondem dados (JSON da API, contadores, arquivos)
+web/          Controllers que renderizam páginas Thymeleaf (inclusive login/registro)
 service/      Regras de negócio e casos de uso
 repository/   Persistência com Spring Data JPA
 domain/       Entidades JPA
@@ -43,7 +58,8 @@ Os controllers recebem requisições e delegam o processamento aos serviços. Os
 ## Banco, segurança e multitenancy
 
 - PostgreSQL é o banco configurado pela aplicação. O Hibernate está configurado para validar o schema na configuração padrão; o perfil local usa `ddl-auto=update`.
-- Há quatro migrations SQL versionadas com Flyway (`V1` a `V4`), incluindo a criação de tenants e a inclusão de `tenant_id` nas entidades de negócio.
+- Há seis migrations SQL versionadas com Flyway (`V1` a `V6`), incluindo a criação de tenants, a inclusão de `tenant_id` nas entidades de negócio e as tabelas do portal do cliente (`V6`).
+- Usuários do portal têm a role `ROLE_CLIENTE` e só acessam `/portal/**`, `/notificacoes/**` e os anexos das próprias ordens; as demais telas e a API são restritas à equipe (`ROLE_ADMIN`/`ROLE_USER`).
 - O isolamento é por `tenant_id` no mesmo banco, não por schema ou database. O tenant associado ao usuário autenticado é colocado em um contexto por requisição; os serviços consultam registros usando esse tenant.
 - O Spring Security configura login por formulário, BCrypt para senhas e autenticação obrigatória nas demais rotas. O cadastro público cria a empresa e seu administrador inicial.
 

@@ -26,12 +26,17 @@ public class UsuarioUserDetailsService implements UserDetailsService {
         Usuario usuario = repo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
+        Long clienteId = UsuarioAtual.ROLE_CLIENTE.equals(usuario.getRole()) && usuario.getCliente() != null
+                ? usuario.getCliente().getId()
+                : null;
+
         return new TenantUserDetails(
                 usuario.getEmail(),
                 usuario.getSenha(),
             List.of(new SimpleGrantedAuthority(usuario.getRole())),
-            usuario.getTenant().getId()
+            usuario.getTenant().getId(),
+            usuario.getId(),
+            clienteId
         );
     }
 }
-

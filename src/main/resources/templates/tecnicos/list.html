@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
@@ -18,20 +18,21 @@
         </div>
         <div class="table-wrap">
           <table class="table">
-            <thead><tr><th>Nome</th><th>Especialidade</th><th>Telefone</th><th>Email</th><th>Status</th><th class="row-actions"><span class="visually-hidden">Ações</span></th></tr></thead>
+            <thead><tr><th>Nome</th><th>Especialidade</th><th>Telefone</th><th>Email</th><th>Avaliação</th><th>Status</th><th class="row-actions"><span class="visually-hidden">Ações</span></th></tr></thead>
             <tbody>
               <tr th:each="t : ${tecnicos}">
                 <td class="primary-cell" th:text="${t.nome}">Carlos Mendes</td>
                 <td th:text="${t.especialidade}">Elétrica</td>
                 <td class="muted-cell" th:text="${t.telefone}">(11) 98765-4321</td>
                 <td class="muted-cell" th:text="${t.email}">carlos@empresa.com</td>
+                <td class="muted-cell" th:text="${mediasTecnicos != null and mediasTecnicos.containsKey(t.id)} ? ${mediasTecnicos.get(t.id)} : '—'">—</td>
                 <td><span class="badge" th:classappend="${t.disponivel} ? ' success' : ' danger'" th:text="${t.disponivel} ? 'Ativo' : 'Inativo'">Ativo</span></td>
                 <td class="row-actions">
                   <a class="icon-button" th:href="@{'/tecnicos/' + ${t.id} + '/editar'}" aria-label="Editar técnico" title="Editar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></a>
                   <form th:action="@{/tecnicos/{id}/excluir(id=${t.id})}" method="post"><button class="icon-button danger" type="submit" aria-label="Excluir técnico" title="Excluir"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button></form>
                 </td>
               </tr>
-              <tr th:if="${#lists.isEmpty(tecnicos)}"><td colspan="6" class="empty-state">Nenhum técnico cadastrado.</td></tr>
+              <tr th:if="${#lists.isEmpty(tecnicos)}"><td colspan="7" class="empty-state">Nenhum técnico cadastrado.</td></tr>
             </tbody>
           </table>
         </div>

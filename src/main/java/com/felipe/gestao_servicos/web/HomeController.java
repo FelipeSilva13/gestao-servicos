@@ -6,6 +6,7 @@ import com.felipe.gestao_servicos.repository.ClienteRepository;
 import com.felipe.gestao_servicos.repository.OrdemServicoRepository;
 import com.felipe.gestao_servicos.repository.ServicoRepository;
 import com.felipe.gestao_servicos.repository.TecnicoRepository;
+import com.felipe.gestao_servicos.service.UsuarioAtual;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,11 +35,15 @@ public class HomeController {
         if (tenantId == null) {
             return "redirect:/registro";
         }
+        if (UsuarioAtual.isCliente()) {
+            return "redirect:/portal";
+        }
 
         model.addAttribute("totalTecnicos", tecnicoRepository.countByTenant_Id(tenantId));
         model.addAttribute("totalClientes", clienteRepository.countByTenant_Id(tenantId));
         model.addAttribute("totalServicos", servicoRepository.countByTenant_Id(tenantId));
-        model.addAttribute("totalOrdens", ordemServicoRepository.countByTenant_IdAndStatusNot(tenantId, StatusOS.FINALIZADA));
+        model.addAttribute("totalOrdens", ordemServicoRepository.countByTenant_IdAndStatusNotIn(tenantId, StatusOS.ENCERRADOS));
+        model.addAttribute("totalSolicitacoes", ordemServicoRepository.countByTenant_IdAndStatus(tenantId, StatusOS.SOLICITADA));
         model.addAttribute("ordensRecentes", ordemServicoRepository.findTop3ByTenant_IdOrderByDataCriacaoDesc(tenantId));
         return "index";
     }

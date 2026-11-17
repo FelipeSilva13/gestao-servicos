@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acesso ao portal | GestãoOS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('clientes')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/layout :: topbar('Clientes')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Acesso ao Portal do Cliente</h1>
+            <p class="page-subtitle" th:text="${cliente.nome}">Cliente</p>
+          </div>
+          <div class="actions"><a class="btn btn-secondary" href="/clientes">Voltar</a></div>
+        </div>
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <section class="form-panel">
+          <p class="muted" th:if="${acesso != null}">
+            Acesso <strong>liberado</strong>. O cliente entra em <strong>/login</strong> com o e-mail
+            <strong th:text="${acesso.email}">email</strong>. Defina uma nova senha abaixo para redefini-la.
+          </p>
+          <p class="muted" th:if="${acesso == null}">
+            O cliente ainda não tem acesso. Defina uma senha inicial; o login será o e-mail
+            <strong th:text="${cliente.email}">email</strong>.
+          </p>
+          <form th:action="@{/clientes/{id}/acesso(id=${cliente.id})}" method="post" style="margin-top:14px">
+            <label><span th:text="${acesso == null} ? 'Senha inicial' : 'Nova senha'">Senha</span>
+              <input type="password" name="senha" required autocomplete="new-password" th:attr="minlength=${senhaMinima}">
+            </label>
+            <p class="hint" th:text="|Mínimo de ${senhaMinima} caracteres. Envie a senha ao cliente por um canal seguro.|"></p>
+            <div class="form-actions">
+              <button class="btn" type="submit" th:text="${acesso == null} ? 'Liberar acesso' : 'Redefinir senha'">Liberar acesso</button>
+            </div>
+          </form>
+          <form th:if="${acesso != null}" th:action="@{/clientes/{id}/acesso/revogar(id=${cliente.id})}" method="post"
+                style="margin-top:20px" onsubmit="return confirm('Revogar o acesso deste cliente ao portal?')">
+            <button class="btn btn-danger" type="submit">Revogar acesso</button>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meus serviços | Portal do Cliente</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/portal :: sidebar('painel')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/portal :: topbar('Portal do Cliente')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" th:text="|Olá, ${cliente != null ? cliente.nome : ''}|">Olá</h1>
+            <p class="page-subtitle">Acompanhe seus atendimentos, aprove orçamentos e abra novas solicitações.</p>
+          </div>
+          <div class="actions">
+            <a class="btn" href="/portal/solicitacoes/nova"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Solicitar atendimento</a>
+          </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <section class="cards" aria-label="Resumo">
+          <article class="card">
+            <span class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span class="big" th:text="${totalAndamento}">0</span><span class="muted">Em andamento</span>
+          </article>
+          <article class="card">
+            <span class="card-icon yellow"><svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+            <span class="big" th:text="${totalOrcamentos}">0</span><span class="muted">Orçamentos para aprovar</span>
+          </article>
+          <article class="card">
+            <span class="card-icon green"><svg viewBox="0 0 24 24"><path d="M9 11 12 14 21 5"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg></span>
+            <span class="big" th:text="${totalConcluidas}">0</span><span class="muted">Concluídos</span>
+          </article>
+          <article class="card">
+            <span class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="big" th:text="${totalGeral}">0</span><span class="muted">Total contratado</span>
+          </article>
+        </section>
+
+        <nav class="tabs" aria-label="Filtrar serviços">
+          <a href="/portal?filtro=andamento" th:classappend="${filtro != 'concluidas' and filtro != 'todas'} ? ' active' : ''">Em andamento</a>
+          <a href="/portal?filtro=concluidas" th:classappend="${filtro == 'concluidas'} ? ' active' : ''">Histórico</a>
+          <a href="/portal?filtro=todas" th:classappend="${filtro == 'todas'} ? ' active' : ''">Todos</a>
+        </nav>
+
+        <div class="ordem-cards">
+          <a th:each="o : ${ordens}" class="ordem-card" th:href="@{/portal/ordens/{id}(id=${o.id})}">
+            <div>
+              <div class="list-title">
+                <span th:text="${o.numero}">OS-001</span> ·
+                <span th:text="${o.servico != null ? o.servico.descricao : 'Solicitação de atendimento'}">Serviço</span>
+              </div>
+              <p th:if="${o.descricaoProblema != null}" th:text="${#strings.abbreviate(o.descricaoProblema, 140)}">Descrição</p>
+              <p>
+                Aberta em <span th:text="${#temporals.format(o.dataCriacao, 'dd/MM/yyyy')}">01/01/2026</span>
+                <th:block th:if="${o.tecnico != null}"> · Técnico: <span th:text="${o.tecnico.nome}">Nome</span></th:block>
+                <th:block th:if="${o.dataAgendada != null}"> · Atendimento: <span th:text="${#temporals.format(o.dataAgendada, 'dd/MM HH:mm')}">01/01</span><span th:unless="${o.agendamentoConfirmado}"> (a confirmar)</span></th:block>
+              </p>
+            </div>
+            <div class="meta">
+              <span class="badge" th:classappend="${' ' + o.status.tom}" th:text="${o.status.label}">Status</span>
+              <span class="acao-pendente" th:if="${o.status.name() == 'AGUARDANDO_APROVACAO'}">Orçamento aguardando você</span>
+              <span class="acao-pendente" th:if="${o.status.name() == 'FINALIZADA' and avaliadas != null and !avaliadas.contains(o.id)}">Avalie o atendimento</span>
+            </div>
+          </a>
+          <div th:if="${#lists.isEmpty(ordens)}" class="panel empty-state">
+            Nenhum serviço por aqui ainda. <a href="/portal/solicitacoes/nova">Abra uma solicitação</a>.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+</body>
+</html>

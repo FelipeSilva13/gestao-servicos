@@ -21,14 +21,14 @@
             <thead><tr><th>Nº OS</th><th>Cliente</th><th>Técnico</th><th>Serviço</th><th>Status</th><th>Abertura</th></tr></thead>
             <tbody>
               <tr th:each="o : ${ordens}">
-                <td class="accent-cell" th:text="${'OS-' + #numbers.formatInteger(o.id, 3)}">OS-001</td>
+                <td class="accent-cell"><a th:href="@{/os/{id}(id=${o.id})}" th:text="${o.numero}" style="text-decoration:none">OS-001</a></td>
                 <td class="primary-cell" th:text="${o.cliente != null ? o.cliente.nome : ''}">Cliente</td>
-                <td th:text="${o.tecnico != null ? o.tecnico.nome : ''}">Técnico</td>
-                <td class="muted-cell" th:text="${o.servico != null ? o.servico.descricao : ''}">Serviço</td>
+                <td th:text="${o.tecnico != null ? o.tecnico.nome : 'A definir'}">Técnico</td>
+                <td class="muted-cell" th:text="${o.servico != null ? o.servico.descricao : 'A definir'}">Serviço</td>
                 <td>
                   <form th:action="@{/os/{id}/status(id=${o.id})}" method="post">
                     <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço">
-                      <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status}" th:selected="${status == o.status}"></option>
+                      <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status.label}" th:selected="${status == o.status}"></option>
                     </select>
                   </form>
                 </td>

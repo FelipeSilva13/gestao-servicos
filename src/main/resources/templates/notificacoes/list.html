@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notificações | GestãoOS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="${isCliente} ? ~{fragments/portal :: sidebar('notificacoes')} : ~{fragments/layout :: sidebar('notificacoes')}"></aside>
+    <main class="main">
+      <header th:replace="${isCliente} ? ~{fragments/portal :: topbar('Notificações')} : ~{fragments/layout :: topbar('Notificações')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Notificações</h1>
+            <p class="page-subtitle">Avisos sobre mudanças nas ordens de serviço.</p>
+          </div>
+          <div class="actions">
+            <form th:action="@{/notificacoes/marcar-todas}" method="post" th:if="${notificacoesNaoLidas != null and notificacoesNaoLidas > 0}">
+              <button class="btn btn-secondary" type="submit">Marcar todas como lidas</button>
+            </form>
+          </div>
+        </div>
+        <section class="panel">
+          <a th:each="n : ${notificacoes}" class="notificacao" th:classappend="${!n.lida} ? ' nao-lida' : ''"
+             th:href="@{/notificacoes/{id}(id=${n.id})}">
+            <span class="texto" th:text="${n.mensagem}">Mensagem</span>
+            <span class="muted" th:text="${#temporals.format(n.data, 'dd/MM HH:mm')}">01/01 10:00</span>
+          </a>
+          <div th:if="${#lists.isEmpty(notificacoes)}" class="empty-state">Nenhuma notificação por enquanto.</div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${ordem.numero + ' | GestãoOS'}">OS | GestãoOS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('os')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/layout :: topbar('Ordens de Serviço')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" th:text="${ordem.numero}">OS-001</h1>
+            <p class="page-subtitle">
+              <span th:text="${ordem.cliente.nome}">Cliente</span> ·
+              aberta em <span th:text="${#temporals.format(ordem.dataCriacao, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+            </p>
+          </div>
+          <div class="actions">
+            <form th:action="@{/os/{id}/status(id=${ordem.id})}" method="post">
+              <input type="hidden" name="voltar" value="detalhe">
+              <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço" style="margin-top:0">
+                <option th:each="s : ${StatusOS}" th:value="${s}" th:text="${s.label}" th:selected="${s == ordem.status}"></option>
+              </select>
+            </form>
+            <a class="btn btn-secondary" href="/os">Voltar</a>
+          </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <div class="detalhe-grid">
+          <div class="stack">
+            <section th:replace="~{fragments/ordem :: etapas(${ordem})}"></section>
+
+            <section class="panel">
+              <div class="panel-heading"><span>Solicitação</span></div>
+              <div class="panel-body">
+                <dl class="dados">
+                  <div class="full"><dt>Descrição do cliente</dt>
+                    <dd th:text="${ordem.descricaoProblema != null ? ordem.descricaoProblema : '—'}" style="white-space:pre-line">—</dd></div>
+                  <div><dt>Cliente</dt><dd th:text="${ordem.cliente.nome}"></dd></div>
+                  <div><dt>Contato</dt><dd th:text="${ordem.cliente.email + (ordem.cliente.telefone != null ? ' · ' + ordem.cliente.telefone : '')}"></dd></div>
+                  <div class="full" th:if="${ordem.cliente.endereco != null}"><dt>Endereço</dt><dd th:text="${ordem.cliente.endereco}"></dd></div>
+                  <div th:if="${ordem.valorTotal != null}"><dt>Valor</dt><dd th:text="|R$ ${#numbers.formatDecimal(ordem.valorTotal, 1, 'POINT', 2, 'COMMA')}|"></dd></div>
+                </dl>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading"><span>Técnico e serviço</span></div>
+              <div class="panel-body">
+                <form th:action="@{/os/{id}/atribuir(id=${ordem.id})}" method="post">
+                  <div class="grid">
+                    <label>Técnico
+                      <select name="tecnicoId">
+                        <option value="">A definir</option>
+                        <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"
+                                th:selected="${ordem.tecnico != null and ordem.tecnico.id == t.id}"></option>
+                      </select>
+                    </label>
+                    <label>Serviço
+                      <select name="servicoId">
+                        <option value="">A definir</option>
+                        <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}"
+                                th:selected="${ordem.servico != null and ordem.servico.id == s.id}"></option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="form-actions"><button class="btn btn-secondary" type="submit">Salvar</button></div>
+                </form>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading"><span>Orçamento</span>
+                <span class="muted" th:if="${ordem.orcamentoEnviadoEm != null}"
+                      th:text="|enviado em ${#temporals.format(ordem.orcamentoEnviadoEm, 'dd/MM/yyyy HH:mm')}|"></span>
+              </div>
+              <div class="panel-body">
+                <div th:if="${ordem.status.name() == 'AGUARDANDO_APROVACAO'}" class="aviso" style="margin-bottom:12px">Aguardando resposta do cliente.</div>
+                <div th:if="${ordem.status.name() == 'RECUSADA'}" class="aviso danger" style="margin-bottom:12px"
+                     th:text="${ordem.orcamentoMotivoRecusa != null} ? |Recusado pelo cliente: ${ordem.orcamentoMotivoRecusa}| : 'Recusado pelo cliente.'">Recusado</div>
+                <p th:if="${ordem.orcamentoRespondidoEm != null and ordem.status.name() != 'RECUSADA'}" class="muted"
+                   th:text="|Aprovado pelo cliente em ${#temporals.format(ordem.orcamentoRespondidoEm, 'dd/MM/yyyy HH:mm')}|"></p>
+                <form th:unless="${ordem.status.name() == 'EM_EXECUCAO' or ordem.status.name() == 'FINALIZADA' or ordem.status.name() == 'CANCELADA'}"
+                      th:action="@{/os/{id}/orcamento(id=${ordem.id})}" method="post">
+                  <div class="grid">
+                    <label>Valor (R$)
+                      <input type="number" name="valor" min="0" step="0.01" required
+                             th:value="${ordem.orcamentoValor != null ? ordem.orcamentoValor : (ordem.servico != null ? ordem.servico.custo : '')}">
+                    </label>
+                  </div>
+                  <label style="margin-top:12px">Detalhamento
+                    <textarea name="descricao" maxlength="2000" rows="4" placeholder="Peças, mão de obra, prazo e condições"
+                              th:text="${ordem.orcamentoDescricao}"></textarea>
+                  </label>
+                  <div class="form-actions">
+                    <button class="btn" type="submit" th:text="${ordem.orcamentoEnviadoEm == null} ? 'Enviar orçamento ao cliente' : 'Reenviar orçamento'">Enviar orçamento</button>
+                  </div>
+                  <p class="hint">O cliente recebe uma notificação e aprova ou recusa pelo portal.</p>
+                </form>
+                <div th:if="${ordem.status.name() == 'EM_EXECUCAO' or ordem.status.name() == 'FINALIZADA'}">
+                  <div th:if="${ordem.orcamentoValor != null}" class="valor-destaque"
+                       th:text="|R$ ${#numbers.formatDecimal(ordem.orcamentoValor, 1, 'POINT', 2, 'COMMA')}|"></div>
+                  <p th:if="${ordem.orcamentoValor == null}" class="muted">Sem orçamento enviado.</p>
+                </div>
+              </div>
+            </section>
+
+            <section th:replace="~{fragments/ordem :: anexos(${anexos}, @{/os/{id}/anexos(id=${ordem.id})}, true)}"></section>
+          </div>
+
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-heading"><span>Agendamento</span>
+                <span th:if="${ordem.dataAgendada != null}" class="badge" th:classappend="${ordem.agendamentoConfirmado} ? ' success' : ' warning'"
+                      th:text="${ordem.agendamentoConfirmado} ? 'Confirmado' : 'Pedido do cliente'">A confirmar</span>
+              </div>
+              <div class="panel-body">
+                <form th:action="@{/os/{id}/agendamento(id=${ordem.id})}" method="post">
+                  <label>Data e horário
+                    <input type="datetime-local" name="dataHora" required
+                           th:value="${ordem.dataAgendada != null ? #temporals.format(ordem.dataAgendada, 'yyyy-MM-dd''T''HH:mm') : ''}">
+                  </label>
+                  <label style="margin-top:10px"><input type="checkbox" name="confirmado" value="true" checked> Confirmar horário com o cliente</label>
+                  <div class="form-actions"><button class="btn btn-secondary" type="submit">Salvar agendamento</button></div>
+                </form>
+              </div>
+            </section>
+
+            <section class="panel" th:if="${ordem.status.name() == 'FINALIZADA'}">
+              <div class="panel-heading"><span>Avaliação do cliente</span></div>
+              <div class="panel-body" th:if="${avaliacao != null}">
+                <p>Serviço: <span th:replace="~{fragments/ordem :: nota(${avaliacao.notaServico})}"></span></p>
+                <p th:if="${avaliacao.notaTecnico != null}">Técnico: <span th:replace="~{fragments/ordem :: nota(${avaliacao.notaTecnico})}"></span></p>
+                <p th:if="${avaliacao.comentario != null}" th:text="|“${avaliacao.comentario}”|"></p>
+              </div>
+              <div class="panel-body" th:if="${avaliacao == null}"><p class="muted">O cliente ainda não avaliou.</p></div>
+            </section>
+
+            <section th:replace="~{fragments/ordem :: historico(${historico})}"></section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+</body>
+</html>

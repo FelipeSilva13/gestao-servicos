@@ -47,12 +47,16 @@
         <section class="panel">
           <div class="panel-heading"><span>Ordens Recentes</span><a href="/os">Ver todas <span aria-hidden="true">→</span></a></div>
           <div th:if="${#lists.isEmpty(ordensRecentes)}" class="empty-state">Nenhuma ordem de serviço cadastrada.</div>
+          <a th:if="${totalSolicitacoes != null and totalSolicitacoes > 0}" class="list-row" href="/os" style="text-decoration:none">
+            <div class="list-title" th:text="|${totalSolicitacoes} nova(s) solicitação(ões) do portal aguardando triagem|">Solicitações</div>
+            <span class="badge warning">Portal</span>
+          </a>
           <div th:each="ordem : ${ordensRecentes}" class="list-row">
             <div>
               <div class="list-title" th:text="${ordem.cliente.nome}">Cliente</div>
               <div class="muted"><span th:text="${'OS-' + ordem.id}">OS-001</span> · <span th:text="${#temporals.format(ordem.dataCriacao, 'dd/MM/yyyy')}">01/08/2026</span></div>
             </div>
-            <span class="badge" th:classappend="${ordem.status.name() == 'FINALIZADA'} ? ' success' : (${ordem.status.name() == 'EM_EXECUCAO'} ? ' warning' : '')" th:text="${ordem.status}">PENDENTE</span>
+            <span class="badge" th:classappend="${' ' + ordem.status.tom}" th:text="${ordem.status.label}">PENDENTE</span>
           </div>
         </section>
       </div>
