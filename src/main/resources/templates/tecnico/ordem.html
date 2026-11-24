@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${ordem.numero + ' | Área do Técnico'}">OS | Área do Técnico</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/tecnico :: sidebar('painel')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/tecnico :: topbar('Atendimento')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" th:text="${ordem.numero}">OS-001</h1>
+            <p class="page-subtitle">
+              <span th:text="${ordem.servico != null ? ordem.servico.descricao : 'Atendimento'}">Serviço</span> ·
+              aberta em <span th:text="${#temporals.format(ordem.dataCriacao, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+            </p>
+          </div>
+          <div class="actions"><a class="btn btn-secondary" href="/tecnico">Voltar</a></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <section th:if="${podeResponder}" class="panel resposta-painel">
+          <div class="panel-heading"><span>A empresa solicitou você para este atendimento</span>
+            <span class="badge warning">Aguardando sua resposta</span></div>
+          <div class="panel-body">
+            <p>Confira os dados abaixo e informe se vai realizar o atendimento.</p>
+            <div class="resposta-acoes">
+              <form th:action="@{/tecnico/ordens/{id}/aceitar(id=${ordem.id})}" method="post">
+                <button class="btn" type="submit">Aceitar atendimento</button>
+              </form>
+              <details class="recusa">
+                <summary class="btn btn-danger">Recusar atendimento</summary>
+                <form th:action="@{/tecnico/ordens/{id}/recusar(id=${ordem.id})}" method="post">
+                  <label>Motivo (opcional)
+                    <textarea name="motivo" maxlength="500" placeholder="Ex.: estarei em outro atendimento nesse horário"></textarea>
+                  </label>
+                  <div class="form-actions"><button class="btn btn-danger" type="submit">Confirmar recusa</button></div>
+                </form>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <div th:if="${!podeResponder and ordem.tecnicoResposta != null}" class="aviso"
+             th:classappend="${ordem.tecnicoResposta.name() == 'RECUSADA'} ? ' danger' : (${ordem.tecnicoResposta.name() == 'ACEITA'} ? ' sucesso' : '')"
+             style="margin-bottom:14px">
+          <span th:if="${ordem.tecnicoResposta.name() == 'ACEITA'}">Você aceitou este atendimento</span>
+          <span th:if="${ordem.tecnicoResposta.name() == 'RECUSADA'}">Você recusou este atendimento</span>
+          <span th:if="${ordem.tecnicoResposta.name() == 'PENDENTE'}">Esta ordem foi encerrada antes da sua resposta</span><span
+                th:if="${ordem.tecnicoRespondidoEm != null}" th:text="${' em ' + #temporals.format(ordem.tecnicoRespondidoEm, 'dd/MM/yyyy HH:mm')}"></span>.
+        </div>
+
+        <div class="detalhe-grid">
+          <div class="stack">
+            <section th:replace="~{fragments/ordem :: etapas(${ordem})}"></section>
+
+            <section class="panel">
+              <div class="panel-heading"><span>Cliente e local</span></div>
+              <div class="panel-body">
+                <dl class="dados">
+                  <div><dt>Cliente</dt><dd th:text="${ordem.cliente.nome}">Cliente</dd></div>
+                  <div><dt>Telefone</dt><dd th:text="${ordem.cliente.telefone != null ? ordem.cliente.telefone : '—'}">—</dd></div>
+                  <div class="full"><dt>Endereço</dt><dd th:text="${ordem.cliente.endereco != null ? ordem.cliente.endereco : '—'}">—</dd></div>
+                  <div class="full"><dt>Problema relatado</dt>
+                    <dd th:text="${ordem.descricaoProblema != null ? ordem.descricaoProblema : '—'}" style="white-space:pre-line">—</dd></div>
+                  <div class="full" th:if="${ordem.observacoes != null}"><dt>Observações da empresa</dt>
+                    <dd th:text="${ordem.observacoes}" style="white-space:pre-line">Obs</dd></div>
+                </dl>
+              </div>
+            </section>
+
+            <section th:replace="~{fragments/ordem :: anexos(${anexos}, '', false)}"></section>
+          </div>
+
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-heading"><span>Agendamento</span></div>
+              <div class="panel-body">
+                <div th:if="${ordem.dataAgendada != null}" class="valor-destaque" style="font-size:20px"
+                     th:text="${#temporals.format(ordem.dataAgendada, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</div>
+                <p th:if="${ordem.dataAgendada != null}" class="muted"
+                   th:text="${ordem.agendamentoConfirmado} ? 'Horário confirmado com o cliente.' : 'Horário ainda a confirmar pela empresa.'"></p>
+                <p th:if="${ordem.dataAgendada == null}" class="muted">A empresa ainda não definiu a data do atendimento.</p>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><span>Serviço</span></div>
+              <div class="panel-body">
+                <dl class="dados">
+                  <div class="full"><dt>Serviço</dt><dd th:text="${ordem.servico != null ? ordem.servico.descricao : 'A definir'}">Serviço</dd></div>
+                  <div><dt>Status</dt><dd><span class="badge" th:classappend="${' ' + ordem.status.tom}" th:text="${ordem.status.label}">Status</span></dd></div>
+                </dl>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

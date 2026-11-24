@@ -21,6 +21,7 @@ public class NotificacaoViewController {
     public String listar(Model model) {
         model.addAttribute("notificacoes", service.listarDoUsuarioAtual());
         model.addAttribute("isCliente", UsuarioAtual.isCliente());
+        model.addAttribute("isTecnico", UsuarioAtual.isTecnico());
         return "notificacoes/list";
     }
 

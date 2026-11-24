@@ -3,6 +3,7 @@ package com.felipe.gestao_servicos.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import com.felipe.gestao_servicos.domain.Tecnico;
 import com.felipe.gestao_servicos.domain.Tenant;
 import com.felipe.gestao_servicos.dto.request.OrdemRequest;
 import com.felipe.gestao_servicos.dto.response.OrdemResponse;
+import com.felipe.gestao_servicos.enums.RespostaTecnico;
 import com.felipe.gestao_servicos.enums.StatusOS;
 import com.felipe.gestao_servicos.repository.ClienteRepository;
 import com.felipe.gestao_servicos.repository.OrdemServicoRepository;
@@ -30,11 +32,13 @@ public class OrdemServicoService {
     private final ClienteRepository clienteRepository;
     private final TenantRepository tenantRepository;
     private final EventoOrdemService eventos;
+    private final AgendaService agenda;
 
     public OrdemServicoService(
             OrdemServicoRepository repository,ServicoRepository servicoRepository, TecnicoRepository tecnicoRepository, ClienteRepository clienteRepository,
-           TenantRepository tenantRepository, EventoOrdemService eventos) {
+           TenantRepository tenantRepository, EventoOrdemService eventos, AgendaService agenda) {
         this.eventos = eventos;
+        this.agenda = agenda;
         this.repository = repository;
         this.servicoRepository = servicoRepository;
         this.clienteRepository = clienteRepository;
@@ -74,7 +78,7 @@ public class OrdemServicoService {
         OrdemServico ordemServico = new OrdemServico();
 
         ordemServico.setCliente(cliente);
-        ordemServico.setTecnico(tecnico);
+        boolean designou = designarTecnico(ordemServico, tecnico);
         ordemServico.setServico(servico);
         ordemServico.setTenant(tenant);
 
@@ -87,6 +91,9 @@ public class OrdemServicoService {
 
         OrdemServico salvo = repository.save(ordemServico);
         eventos.registrar(salvo, "Ordem de serviço aberta pela empresa", EventoOrdemService.Destino.CLIENTE);
+        if (designou) {
+            avisarTecnicoDesignado(salvo);
+        }
 
         return toResponse(salvo);
     }
@@ -104,7 +111,7 @@ public class OrdemServicoService {
             .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado no tenant atual"));
 
         ordemServico.setCliente(cliente);
-        ordemServico.setTecnico(tecnico);
+        boolean designou = designarTecnico(ordemServico, tecnico);
         ordemServico.setServico(servico);
         ordemServico.setStatus(request.status());
         ordemServico.setDataCriacao(request.dataCriacao());
@@ -113,7 +120,11 @@ public class OrdemServicoService {
         ordemServico.setObservacoes(request.observacoes());
         ordemServico.setValorTotal(request.valorTotal());
 
-        return toResponse(repository.save(ordemServico));
+        OrdemServico salvo = repository.save(ordemServico);
+        if (designou) {
+            avisarTecnicoDesignado(salvo);
+        }
+        return toResponse(salvo);
         }
 
 
@@ -177,14 +188,37 @@ public class OrdemServicoService {
         Servico servico = servicoId == null ? null : servicoRepository.findByIdAndTenant_Id(servicoId, tenantId)
                 .orElseThrow(() -> new RegraNegocioException("Serviço não encontrado"));
 
-        boolean trocouTecnico = tecnico != null && (os.getTecnico() == null || !tecnico.getId().equals(os.getTecnico().getId()));
-        os.setTecnico(tecnico);
+        boolean trocouTecnico = designarTecnico(os, tecnico);
         os.setServico(servico);
         OrdemServico salvo = repository.save(os);
         if (trocouTecnico) {
             eventos.registrar(salvo, "Técnico responsável: " + tecnico.getNome(), EventoOrdemService.Destino.CLIENTE);
+            avisarTecnicoDesignado(salvo);
         }
         return salvo;
+    }
+
+    /**
+     * Define o técnico da ordem. Quando o técnico muda, a ordem passa a aguardar
+     * a resposta (aceite/recusa) do novo técnico. Devolve true se um técnico foi designado.
+     */
+    private boolean designarTecnico(OrdemServico os, Tecnico tecnico) {
+        Long anterior = os.getTecnico() == null ? null : os.getTecnico().getId();
+        Long novo = tecnico == null ? null : tecnico.getId();
+        os.setTecnico(tecnico);
+        if (Objects.equals(anterior, novo) && (tecnico == null || os.getTecnicoResposta() != null)) {
+            return false;
+        }
+        os.setTecnicoResposta(tecnico == null ? null : RespostaTecnico.PENDENTE);
+        os.setTecnicoRespondidoEm(null);
+        os.setTecnicoMotivoRecusa(null);
+        return tecnico != null;
+    }
+
+    private void avisarTecnicoDesignado(OrdemServico os) {
+        String servico = os.getServico() != null ? os.getServico().getDescricao() : "um atendimento";
+        eventos.avisarTecnico(os, "A empresa solicitou você para " + servico + " do cliente "
+                + os.getCliente().getNome() + ". Aceite ou recuse o atendimento.");
     }
 
     /** Envia (ou reenvia) o orçamento para aprovação do cliente. */
@@ -213,9 +247,10 @@ public class OrdemServicoService {
     @Transactional
     public OrdemServico agendar(Long id, LocalDateTime dataHora, boolean confirmado) {
         OrdemServico os = buscarObrigatoria(id);
-        if (dataHora == null) {
-            throw new RegraNegocioException("Informe a data e hora do atendimento");
+        if (os.getStatus().isEncerrado()) {
+            throw new RegraNegocioException("Esta ordem já foi encerrada");
         }
+        agenda.validarHorario(dataHora, os.getId());
         os.setDataAgendada(dataHora);
         os.setAgendamentoConfirmado(confirmado);
         OrdemServico salvo = repository.save(os);

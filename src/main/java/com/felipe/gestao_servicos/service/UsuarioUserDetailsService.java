@@ -29,6 +29,9 @@ public class UsuarioUserDetailsService implements UserDetailsService {
         Long clienteId = UsuarioAtual.ROLE_CLIENTE.equals(usuario.getRole()) && usuario.getCliente() != null
                 ? usuario.getCliente().getId()
                 : null;
+        Long tecnicoId = UsuarioAtual.ROLE_TECNICO.equals(usuario.getRole()) && usuario.getTecnico() != null
+                ? usuario.getTecnico().getId()
+                : null;
 
         return new TenantUserDetails(
                 usuario.getEmail(),
@@ -36,7 +39,8 @@ public class UsuarioUserDetailsService implements UserDetailsService {
             List.of(new SimpleGrantedAuthority(usuario.getRole())),
             usuario.getTenant().getId(),
             usuario.getId(),
-            clienteId
+            clienteId,
+            tecnicoId
         );
     }
 }

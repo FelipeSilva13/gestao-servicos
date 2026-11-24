@@ -17,17 +17,18 @@
           <div class="actions"><a class="btn" href="/tecnicos/novo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo Técnico</a></div>
         </div>
         <div class="table-wrap">
-          <table class="table">
+          <table class="table table-cards">
             <thead><tr><th>Nome</th><th>Especialidade</th><th>Telefone</th><th>Email</th><th>Avaliação</th><th>Status</th><th class="row-actions"><span class="visually-hidden">Ações</span></th></tr></thead>
             <tbody>
               <tr th:each="t : ${tecnicos}">
-                <td class="primary-cell" th:text="${t.nome}">Carlos Mendes</td>
-                <td th:text="${t.especialidade}">Elétrica</td>
-                <td class="muted-cell" th:text="${t.telefone}">(11) 98765-4321</td>
-                <td class="muted-cell" th:text="${t.email}">carlos@empresa.com</td>
-                <td class="muted-cell" th:text="${mediasTecnicos != null and mediasTecnicos.containsKey(t.id)} ? ${mediasTecnicos.get(t.id)} : '—'">—</td>
-                <td><span class="badge" th:classappend="${t.disponivel} ? ' success' : ' danger'" th:text="${t.disponivel} ? 'Ativo' : 'Inativo'">Ativo</span></td>
-                <td class="row-actions">
+                <td class="primary-cell" data-label="Nome" th:text="${t.nome}">Carlos Mendes</td>
+                <td data-label="Especialidade" th:text="${t.especialidade}">Elétrica</td>
+                <td class="muted-cell" data-label="Telefone" th:text="${t.telefone}">(11) 98765-4321</td>
+                <td class="muted-cell" data-label="Email" th:text="${t.email}">carlos@empresa.com</td>
+                <td class="muted-cell" data-label="Avaliação" th:text="${mediasTecnicos != null and mediasTecnicos.containsKey(t.id)} ? ${mediasTecnicos.get(t.id)} : '—'">—</td>
+                <td data-label="Status"><span class="badge" th:classappend="${t.disponivel} ? ' success' : ' danger'" th:text="${t.disponivel} ? 'Ativo' : 'Inativo'">Ativo</span></td>
+                <td class="row-actions" data-label="Ações">
+                  <a class="icon-button" th:if="${isAdmin}" th:href="@{/tecnicos/{id}/acesso(id=${t.id})}" aria-label="Acesso à área do técnico" title="Acesso do técnico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></a>
                   <a class="icon-button" th:href="@{'/tecnicos/' + ${t.id} + '/editar'}" aria-label="Editar técnico" title="Editar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></a>
                   <form th:action="@{/tecnicos/{id}/excluir(id=${t.id})}" method="post"><button class="icon-button danger" type="submit" aria-label="Excluir técnico" title="Excluir"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button></form>
                 </td>

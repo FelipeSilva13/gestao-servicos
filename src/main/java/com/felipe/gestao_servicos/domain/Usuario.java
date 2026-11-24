@@ -40,4 +40,10 @@ public class Usuario {
     @JsonIgnore
     private Cliente cliente;
 
+    /** Preenchido apenas para usuários da área do técnico (ROLE_TECNICO). */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tecnico_id")
+    @JsonIgnore
+    private Tecnico tecnico;
+
 }

@@ -28,7 +28,7 @@ public class ClienteService {
         cliente.setNome(clienteRequest.nome());
         cliente.setEmail(clienteRequest.email());
         cliente.setEndereco(clienteRequest.endereco());
-        cliente.setTelefone(clienteRequest.telefone());
+        cliente.setTelefone(normalizarTelefone(clienteRequest.telefone()));
         cliente.setTenant(tenant);
 
         Cliente salvo = repository.save(cliente);
@@ -42,9 +42,24 @@ public class ClienteService {
         cliente.setNome(clienteRequest.nome());
         cliente.setEmail(clienteRequest.email());
         cliente.setEndereco(clienteRequest.endereco());
-        cliente.setTelefone(clienteRequest.telefone());
+        cliente.setTelefone(normalizarTelefone(clienteRequest.telefone()));
         return toResponse(repository.save(cliente));
     }
+    /** Mantém só os dígitos (DDD + número) e garante o limite de 11 da coluna clientes.telefone. */
+    private String normalizarTelefone(String telefone) {
+        if (telefone == null) {
+            return null;
+        }
+        String digitos = telefone.replaceAll("\\D", "");
+        if (digitos.isEmpty()) {
+            return null;
+        }
+        if (digitos.length() > 11) {
+            throw new IllegalArgumentException("Telefone deve ter no máximo 11 dígitos (DDD + número)");
+        }
+        return digitos;
+    }
+
     public List<ClienteResponse> listar() {
         return repository.findAllByTenant_Id(tenantAtual().getId())
                 .stream()

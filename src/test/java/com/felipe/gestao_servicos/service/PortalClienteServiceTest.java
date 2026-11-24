@@ -46,6 +46,7 @@ class PortalClienteServiceTest {
     @Mock AvaliacaoRepository avaliacaoRepository;
     @Mock AnexoService anexoService;
     @Mock EventoOrdemService eventos;
+    @Mock AgendaService agenda;
 
     PortalClienteService service;
     Tenant tenant;
@@ -54,7 +55,7 @@ class PortalClienteServiceTest {
     @BeforeEach
     void setUp() {
         service = new PortalClienteService(ordemRepository, clienteRepository, servicoRepository,
-                tenantRepository, avaliacaoRepository, anexoService, eventos);
+                tenantRepository, avaliacaoRepository, anexoService, eventos, agenda);
         tenant = new Tenant();
         tenant.setId(TENANT);
         cliente = new Cliente();
@@ -107,9 +108,11 @@ class PortalClienteServiceTest {
     }
 
     @Test
-    void solicitarRejeitaDataNoPassado() {
-        assertThrows(RegraNegocioException.class,
-                () -> service.solicitar("Algo", null, LocalDateTime.now().minusDays(1), List.of()));
+    void solicitarRejeitaHorarioRecusadoPelaAgenda() {
+        LocalDateTime ontem = LocalDateTime.now().minusDays(1);
+        doThrow(new RegraNegocioException("Escolha um horário futuro")).when(agenda).validarHorario(ontem, null);
+
+        assertThrows(RegraNegocioException.class, () -> service.solicitar("Algo", null, ontem, List.of()));
         verify(ordemRepository, never()).save(any());
     }
 
@@ -157,8 +160,22 @@ class PortalClienteServiceTest {
 
         service.reagendar(7L, nova);
 
+        verify(agenda).validarHorario(nova, 7L);
         assertEquals(nova, os.getDataAgendada());
         assertFalse(os.isAgendamentoConfirmado());
+    }
+
+    @Test
+    void reagendarRecusadoPelaAgendaNaoAlteraAOrdem() {
+        OrdemServico os = ordem(StatusOS.PENDENTE);
+        LocalDateTime original = os.getDataAgendada();
+        LocalDateTime nova = LocalDateTime.now().plusDays(5);
+        doThrow(new RegraNegocioException("Horário indisponível")).when(agenda).validarHorario(nova, 7L);
+
+        assertThrows(RegraNegocioException.class, () -> service.reagendar(7L, nova));
+
+        assertEquals(original, os.getDataAgendada());
+        verify(ordemRepository, never()).save(any());
     }
 
     @Test

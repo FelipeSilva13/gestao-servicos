@@ -151,7 +151,8 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
   .operation-preview, .brand-footer { display: none; }
   .signup-section { display: block; min-height: unset; padding: 29px 22px 28px; }
   .signup-content { max-width: 480px; margin: 0 auto; }
-  .signup-topline { display: none; }
+  .signup-topline { justify-content: space-between; gap: 10px; margin-bottom: 26px; padding: 4px 6px 4px 14px; border: 1px solid #2a3944; border-radius: 8px; background: #14202a; font-size: 10px; }
+  .signup-topline a { min-height: 44px; padding: 0 10px; font-size: 14px; }
   .form-heading h2 { margin-top: 14px; font-size: 30px; }
   .form-heading p { font-size: 12px; }
   .signup-form { margin-top: 22px; padding: 21px 18px; }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda | GestãoOS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('agenda')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/layout :: topbar('Agenda')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Agenda de atendimentos</h1>
+            <p class="page-subtitle">
+              Selecione os dias em que a empresa vai atender e clique em <strong>Abrir dias selecionados</strong>.
+              Só os dias abertos ficam disponíveis no calendário do cliente, e cada atendimento fica a pelo menos
+              <strong th:text="${intervaloHoras} + ' horas'">4 horas</strong> do outro.
+            </p>
+          </div>
+        </div>
+        <section class="panel">
+          <div class="panel-body">
+            <div data-calendario="gestor" data-url="/api/agenda"
+                 th:attr="data-inicio=${#temporals.format(inicioPadrao, 'HH:mm')},data-fim=${#temporals.format(fimPadrao, 'HH:mm')}"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+  <script th:src="@{/js/calendario.js}" defer></script>
+</body>
+</html>

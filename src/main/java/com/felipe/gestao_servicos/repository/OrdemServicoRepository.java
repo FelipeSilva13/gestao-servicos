@@ -1,5 +1,6 @@
 package com.felipe.gestao_servicos.repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,14 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
     // Portal do cliente: sempre filtrado pelo cliente dono da ordem
     List<OrdemServico> findByCliente_IdAndTenant_IdOrderByDataCriacaoDesc(Long clienteId, Long tenantId);
     Optional<OrdemServico> findByIdAndCliente_IdAndTenant_Id(Long id, Long clienteId, Long tenantId);
+
+    // Área do técnico: sempre filtrado pelo técnico designado
+    List<OrdemServico> findByTecnico_IdAndTenant_IdOrderByDataCriacaoDesc(Long tecnicoId, Long tenantId);
+    Optional<OrdemServico> findByIdAndTecnico_IdAndTenant_Id(Long id, Long tecnicoId, Long tenantId);
+
+    /** Ordens com horário marcado no período, ignorando as já encerradas (não ocupam a agenda). */
+    List<OrdemServico> findByTenant_IdAndDataAgendadaBetweenAndStatusNotInOrderByDataAgendada(
+            Long tenantId, LocalDateTime inicio, LocalDateTime fim, Collection<StatusOS> status);
 
     @Query("select o from OrdemServico o where o.tecnico.id = :tecnicoId and o.status = :status and o.tenant.id = :tenantId")
     List<OrdemServico> findByTecnicoAndStatus(@Param("tecnicoId") Long tecnicoId, @Param("status") StatusOS status, @Param("tenantId") Long tenantId);

@@ -8,9 +8,9 @@
 </head>
 <body>
   <div class="app">
-    <aside th:replace="${isCliente} ? ~{fragments/portal :: sidebar('notificacoes')} : ~{fragments/layout :: sidebar('notificacoes')}"></aside>
+    <aside th:replace="${isCliente} ? ~{fragments/portal :: sidebar('notificacoes')} : (${isTecnico} ? ~{fragments/tecnico :: sidebar('notificacoes')} : ~{fragments/layout :: sidebar('notificacoes')})"></aside>
     <main class="main">
-      <header th:replace="${isCliente} ? ~{fragments/portal :: topbar('Notificações')} : ~{fragments/layout :: topbar('Notificações')}"></header>
+      <header th:replace="${isCliente} ? ~{fragments/portal :: topbar('Notificações')} : (${isTecnico} ? ~{fragments/tecnico :: topbar('Notificações')} : ~{fragments/layout :: topbar('Notificações')})"></header>
       <div class="page-content">
         <div class="page-header">
           <div>

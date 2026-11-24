@@ -33,11 +33,12 @@
                   <option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.descricao}">Serviço</option>
                 </select>
               </label>
-              <label>Data e horário de preferência (opcional)
-                <input type="datetime-local" name="dataPreferida">
-                <span class="hint">A empresa confirma ou propõe outro horário.</span>
-              </label>
             </div>
+            <fieldset class="cal-campo" style="margin-top:16px">
+              <legend>Data e horário de preferência (opcional)</legend>
+              <div data-calendario="seletor" data-url="/portal/agenda" data-nome="dataPreferida"></div>
+              <span class="hint">Os dias em destaque estão abertos pela empresa. Ela confirma o horário ou propõe outro.</span>
+            </fieldset>
             <label style="margin-top:16px">Fotos, vídeos ou documentos (opcional)
               <input type="file" name="arquivos" multiple th:attr="accept=${extensoesAceitas}">
               <span class="hint">Até 25 MB por arquivo. Imagens, vídeos, PDF e documentos do Office.</span>
@@ -52,5 +53,6 @@
     </main>
   </div>
   <script th:src="@{/js/acompanhamento.js}" defer></script>
+  <script th:src="@{/js/calendario.js}" defer></script>
 </body>
 </html>

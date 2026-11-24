@@ -17,22 +17,24 @@
           <div class="actions"><a class="btn" href="/os/nova"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nova OS</a></div>
         </div>
         <div class="table-wrap">
-          <table class="table">
+          <table class="table table-cards">
             <thead><tr><th>Nº OS</th><th>Cliente</th><th>Técnico</th><th>Serviço</th><th>Status</th><th>Abertura</th></tr></thead>
             <tbody>
               <tr th:each="o : ${ordens}">
-                <td class="accent-cell"><a th:href="@{/os/{id}(id=${o.id})}" th:text="${o.numero}" style="text-decoration:none">OS-001</a></td>
-                <td class="primary-cell" th:text="${o.cliente != null ? o.cliente.nome : ''}">Cliente</td>
-                <td th:text="${o.tecnico != null ? o.tecnico.nome : 'A definir'}">Técnico</td>
-                <td class="muted-cell" th:text="${o.servico != null ? o.servico.descricao : 'A definir'}">Serviço</td>
-                <td>
+                <td class="accent-cell" data-label="Nº OS"><a th:href="@{/os/{id}(id=${o.id})}" th:text="${o.numero}" style="text-decoration:none">OS-001</a></td>
+                <td class="primary-cell" data-label="Cliente" th:text="${o.cliente != null ? o.cliente.nome : ''}">Cliente</td>
+                <td data-label="Técnico"><span th:text="${o.tecnico != null ? o.tecnico.nome : 'A definir'}">Técnico</span>
+                  <span th:if="${o.tecnico != null and o.tecnicoResposta != null and o.tecnicoResposta.name() != 'ACEITA'}" class="badge resposta-tecnico"
+                        th:classappend="${' ' + o.tecnicoResposta.tom}" th:text="${o.tecnicoResposta.name() == 'PENDENTE'} ? 'Aguardando técnico' : 'Recusada'">Aguardando técnico</span></td>
+                <td class="muted-cell" data-label="Serviço" th:text="${o.servico != null ? o.servico.descricao : 'A definir'}">Serviço</td>
+                <td data-label="Status">
                   <form th:action="@{/os/{id}/status(id=${o.id})}" method="post">
                     <select name="status" onchange="this.form.submit()" aria-label="Alterar status da ordem de serviço">
                       <option th:each="status : ${StatusOS}" th:value="${status}" th:text="${status.label}" th:selected="${status == o.status}"></option>
                     </select>
                   </form>
                 </td>
-                <td class="muted-cell" th:text="${#temporals.format(o.dataCriacao, 'dd/MM/yyyy')}">01/08/2026</td>
+                <td class="muted-cell" data-label="Abertura" th:text="${#temporals.format(o.dataCriacao, 'dd/MM/yyyy')}">01/08/2026</td>
               </tr>
               <tr th:if="${#lists.isEmpty(ordens)}"><td colspan="6" class="empty-state">Nenhuma ordem de serviço cadastrada.</td></tr>
             </tbody>

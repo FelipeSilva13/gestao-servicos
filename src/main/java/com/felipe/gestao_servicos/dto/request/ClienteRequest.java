@@ -2,6 +2,7 @@ package com.felipe.gestao_servicos.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record ClienteRequest(
@@ -15,7 +16,9 @@ public record ClienteRequest(
         @Email(message = "email inválido")
         String email,
 
-        @Size(max = 11)
+        @Pattern(
+                regexp = "(\\d{10,11})?",
+                message = "Telefone deve conter apenas números e ter 10 ou 11 dígitos")
         String telefone,
 
         @Size(max = 255)

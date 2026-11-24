@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acesso do técnico | GestãoOS</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('tecnicos')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/layout :: topbar('Técnicos')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Acesso à Área do Técnico</h1>
+            <p class="page-subtitle" th:text="${tecnico.nome}">Técnico</p>
+          </div>
+          <div class="actions"><a class="btn btn-secondary" href="/tecnicos">Voltar</a></div>
+        </div>
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <section class="form-panel">
+          <p class="muted" th:if="${acesso != null}">
+            Acesso <strong>liberado</strong>. O técnico entra em <strong>/login</strong> com o e-mail
+            <strong th:text="${acesso.email}">email</strong>. Defina uma nova senha abaixo para redefini-la.
+          </p>
+          <p class="muted" th:if="${acesso == null}">
+            O técnico ainda não tem acesso. Defina uma senha inicial; o login será o e-mail
+            <strong th:text="${tecnico.email}">email</strong>.
+          </p>
+          <form th:action="@{/tecnicos/{id}/acesso(id=${tecnico.id})}" method="post" style="margin-top:14px">
+            <div th:replace="~{fragments/layout :: campoSenha(${acesso == null} ? 'Senha inicial' : 'Nova senha', ${senhaMinima})}"></div>
+            <p class="hint" th:text="|Mínimo de ${senhaMinima} caracteres. Envie a senha ao técnico por um canal seguro.|"></p>
+            <div class="form-actions">
+              <button class="btn" type="submit" th:text="${acesso == null} ? 'Liberar acesso' : 'Redefinir senha'">Liberar acesso</button>
+            </div>
+          </form>
+          <form th:if="${acesso != null}" th:action="@{/tecnicos/{id}/acesso/revogar(id=${tecnico.id})}" method="post"
+                style="margin-top:20px" onsubmit="return confirm('Revogar o acesso deste técnico?')">
+            <button class="btn btn-danger" type="submit">Revogar acesso</button>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

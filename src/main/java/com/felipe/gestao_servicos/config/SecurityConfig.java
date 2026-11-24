@@ -40,6 +40,10 @@ public class SecurityConfig {
                     .requestMatchers("/", "/login", "/registro", "/api/empresas/**", "/empresa/**", "/css/**", "/js/**").permitAll()
                     // Portal do cliente
                     .requestMatchers("/portal/**").hasRole("CLIENTE")
+                    // Área do técnico
+                    .requestMatchers("/tecnico/**").hasRole("TECNICO")
+                    // Liberar/revogar acessos de clientes e técnicos: somente o administrador
+                    .requestMatchers("/clientes/*/acesso/**", "/tecnicos/*/acesso/**").hasRole("ADMIN")
                     // Compartilhados: cada serviço valida a quem pertence o recurso
                     .requestMatchers("/notificacoes/**", "/anexos/**").authenticated()
                     .requestMatchers("/admin/**").hasRole("ADMIN")

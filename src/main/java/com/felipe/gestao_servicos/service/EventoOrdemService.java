@@ -42,6 +42,16 @@ public class EventoOrdemService {
         }
     }
 
+    /** Aviso direto ao técnico designado, sem entrar na linha do tempo do cliente. */
+    public void avisarTecnico(OrdemServico os, String descricao) {
+        notificacaoService.notificarTecnico(os, os.getNumero() + ": " + descricao);
+    }
+
+    /** Aviso direto à equipe interna, sem entrar na linha do tempo do cliente. */
+    public void avisarEquipe(OrdemServico os, String descricao) {
+        notificacaoService.notificarEquipe(os, os.getNumero() + ": " + descricao);
+    }
+
     public List<OrdemHistorico> historico(OrdemServico os) {
         return historicoRepository.findByOrdemIdAndTenantIdOrderByDataAscIdAsc(os.getId(), os.getTenant().getId());
     }

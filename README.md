@@ -24,7 +24,9 @@ A empresa libera o acesso em **Clientes → cadeado** (login = e-mail do cliente
 | Envio de arquivos | Fotos, vídeos, PDF e documentos do Office (até 25 MB cada), salvos em `UPLOADS_DIR`. |
 | Avaliação do atendimento | Após a conclusão, nota de 1 a 5 para o serviço e para o técnico; a média aparece em Técnicos. |
 | Notificações | Sino com avisos a cada mudança de status, orçamento, agenda ou anexo (cliente e equipe). |
-| Agendamento | O cliente sugere a data; a empresa confirma ou propõe outra. |
+| Agendamento | Calendário interativo: o cliente só escolhe dias abertos pela empresa (em destaque) e horários livres; dias lotados ficam bloqueados e cada atendimento fica a pelo menos 4 horas do outro. A empresa confirma ou propõe outro horário. |
+
+Na área da empresa, **Agenda** (`/agenda`) mostra o mês em calendário: selecione os dias, defina abertura e fechamento e clique em *Abrir dias selecionados*. Cada dia mostra os atendimentos marcados e os horários que ainda estão livres. Um dia com atendimento marcado só pode ser fechado depois que eles forem remarcados.
 
 ## Tecnologias
 
@@ -58,7 +60,7 @@ Os controllers recebem requisições e delegam o processamento aos serviços. Os
 ## Banco, segurança e multitenancy
 
 - PostgreSQL é o banco configurado pela aplicação. O Hibernate está configurado para validar o schema na configuração padrão; o perfil local usa `ddl-auto=update`.
-- Há seis migrations SQL versionadas com Flyway (`V1` a `V6`), incluindo a criação de tenants, a inclusão de `tenant_id` nas entidades de negócio e as tabelas do portal do cliente (`V6`).
+- Há sete migrations SQL versionadas com Flyway (`V1` a `V7`), incluindo a criação de tenants, a inclusão de `tenant_id` nas entidades de negócio, as tabelas do portal do cliente (`V6`) e os dias abertos da agenda (`V7`).
 - Usuários do portal têm a role `ROLE_CLIENTE` e só acessam `/portal/**`, `/notificacoes/**` e os anexos das próprias ordens; as demais telas e a API são restritas à equipe (`ROLE_ADMIN`/`ROLE_USER`).
 - O isolamento é por `tenant_id` no mesmo banco, não por schema ou database. O tenant associado ao usuário autenticado é colocado em um contexto por requisição; os serviços consultam registros usando esse tenant.
 - O Spring Security configura login por formulário, BCrypt para senhas e autenticação obrigatória nas demais rotas. O cadastro público cria a empresa e seu administrador inicial.

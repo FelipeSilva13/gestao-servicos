@@ -52,8 +52,15 @@
             </section>
 
             <section class="panel">
-              <div class="panel-heading"><span>Técnico e serviço</span></div>
+              <div class="panel-heading"><span>Técnico e serviço</span>
+                <span th:if="${ordem.tecnico != null and ordem.tecnicoResposta != null}" class="badge"
+                      th:classappend="${' ' + ordem.tecnicoResposta.tom}" th:text="${ordem.tecnicoResposta.label}">Aguardando resposta</span>
+              </div>
               <div class="panel-body">
+                <div th:if="${ordem.tecnicoResposta != null and ordem.tecnicoResposta.name() == 'RECUSADA'}" class="aviso danger" style="margin-bottom:12px">
+                  <span th:text="|${ordem.tecnico.nome} recusou este atendimento|">Recusado</span><span th:if="${ordem.tecnicoMotivoRecusa != null}" th:text="|: ${ordem.tecnicoMotivoRecusa}|"></span>.
+                  Designe outro técnico.
+                </div>
                 <form th:action="@{/os/{id}/atribuir(id=${ordem.id})}" method="post">
                   <div class="grid">
                     <label>Técnico
@@ -122,11 +129,12 @@
                       th:text="${ordem.agendamentoConfirmado} ? 'Confirmado' : 'Pedido do cliente'">A confirmar</span>
               </div>
               <div class="panel-body">
-                <form th:action="@{/os/{id}/agendamento(id=${ordem.id})}" method="post">
-                  <label>Data e horário
-                    <input type="datetime-local" name="dataHora" required
-                           th:value="${ordem.dataAgendada != null ? #temporals.format(ordem.dataAgendada, 'yyyy-MM-dd''T''HH:mm') : ''}">
-                  </label>
+                <div th:if="${ordem.dataAgendada != null}" class="valor-destaque" style="font-size:20px"
+                     th:text="${#temporals.format(ordem.dataAgendada, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</div>
+                <form th:unless="${ordem.status.encerrado}" th:action="@{/os/{id}/agendamento(id=${ordem.id})}" method="post">
+                  <div data-calendario="seletor" data-url="/api/agenda" data-nome="dataHora" data-obrigatorio
+                       th:attr="data-ordem=${ordem.id},data-valor=${ordem.dataAgendada != null ? #temporals.format(ordem.dataAgendada, 'yyyy-MM-dd''T''HH:mm') : ''}"></div>
+                  <span class="hint">Só aparecem os dias abertos em <a href="/agenda">Agenda</a>.</span>
                   <label style="margin-top:10px"><input type="checkbox" name="confirmado" value="true" checked> Confirmar horário com o cliente</label>
                   <div class="form-actions"><button class="btn btn-secondary" type="submit">Salvar agendamento</button></div>
                 </form>
@@ -150,5 +158,6 @@
     </main>
   </div>
   <script th:src="@{/js/acompanhamento.js}" defer></script>
+  <script th:src="@{/js/calendario.js}" defer></script>
 </body>
 </html>

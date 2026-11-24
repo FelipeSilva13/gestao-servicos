@@ -16,6 +16,7 @@ import java.util.Objects;
 public class NotificacaoService {
 
     private static final int LIMITE_LISTAGEM = 100;
+    private static final List<String> EQUIPE_INTERNA = List.of(UsuarioAtual.ROLE_ADMIN, UsuarioAtual.ROLE_USER);
 
     private final NotificacaoRepository repository;
     private final UsuarioRepository usuarioRepository;
@@ -32,11 +33,21 @@ public class NotificacaoService {
                 .forEach(u -> criar(u, tenantId, os.getId(), mensagem));
     }
 
-    /** Avisa toda a equipe da empresa (exceto quem disparou a ação). */
+    /** Avisa os usuários da área do técnico vinculados ao técnico designado na ordem. */
+    public void notificarTecnico(OrdemServico os, String mensagem) {
+        if (os.getTecnico() == null) {
+            return;
+        }
+        Long tenantId = os.getTenant().getId();
+        usuarioRepository.findByTecnico_IdAndTenant_Id(os.getTecnico().getId(), tenantId)
+                .forEach(u -> criar(u, tenantId, os.getId(), mensagem));
+    }
+
+    /** Avisa toda a equipe interna da empresa (exceto quem disparou a ação); clientes e técnicos ficam de fora. */
     public void notificarEquipe(OrdemServico os, String mensagem) {
         Long tenantId = os.getTenant().getId();
         Long autorId = UsuarioAtual.detalhes().map(TenantUserDetails::getUsuarioId).orElse(null);
-        usuarioRepository.findByTenant_IdAndRoleNot(tenantId, UsuarioAtual.ROLE_CLIENTE).stream()
+        usuarioRepository.findByTenant_IdAndRoleIn(tenantId, EQUIPE_INTERNA).stream()
                 .filter(u -> !Objects.equals(u.getId(), autorId))
                 .forEach(u -> criar(u, tenantId, os.getId(), mensagem));
     }
@@ -61,7 +72,10 @@ public class NotificacaoService {
         if (notificacao.getOrdemId() == null) {
             return "/notificacoes";
         }
-        return (UsuarioAtual.isCliente() ? "/portal/ordens/" : "/os/") + notificacao.getOrdemId();
+        String base = UsuarioAtual.isCliente() ? "/portal/ordens/"
+                : UsuarioAtual.isTecnico() ? "/tecnico/ordens/"
+                : "/os/";
+        return base + notificacao.getOrdemId();
     }
 
     public void marcarTodasComoLidas() {

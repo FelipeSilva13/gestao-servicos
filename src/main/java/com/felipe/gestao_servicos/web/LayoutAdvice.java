@@ -1,6 +1,7 @@
 package com.felipe.gestao_servicos.web;
 
 import com.felipe.gestao_servicos.service.NotificacaoService;
+import com.felipe.gestao_servicos.service.UsuarioAtual;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,5 +23,11 @@ public class LayoutAdvice {
             return 0;
         }
         return notificacaoService.contarNaoLidasDoUsuarioAtual();
+    }
+
+    /** Só o administrador vê e usa a liberação de acesso de clientes e técnicos. */
+    @ModelAttribute("isAdmin")
+    public boolean isAdmin() {
+        return UsuarioAtual.isAdmin();
     }
 }

@@ -9,7 +9,10 @@ import java.util.Optional;
 /** Acesso ao usuário autenticado na requisição atual. */
 public final class UsuarioAtual {
 
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_CLIENTE = "ROLE_CLIENTE";
+    public static final String ROLE_TECNICO = "ROLE_TECNICO";
 
     private UsuarioAtual() {}
 
@@ -31,5 +34,15 @@ public final class UsuarioAtual {
 
     public static boolean isCliente() {
         return detalhes().map(TenantUserDetails::isCliente).orElse(false);
+    }
+
+    public static boolean isTecnico() {
+        return detalhes().map(TenantUserDetails::isTecnico).orElse(false);
+    }
+
+    public static boolean isAdmin() {
+        return detalhes()
+                .map(d -> d.getAuthorities().stream().anyMatch(a -> ROLE_ADMIN.equals(a.getAuthority())))
+                .orElse(false);
     }
 }

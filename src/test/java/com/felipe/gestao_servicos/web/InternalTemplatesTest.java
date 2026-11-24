@@ -8,6 +8,7 @@ import com.felipe.gestao_servicos.domain.OrdemHistorico;
 import com.felipe.gestao_servicos.domain.OrdemServico;
 import com.felipe.gestao_servicos.domain.Servico;
 import com.felipe.gestao_servicos.domain.Tecnico;
+import com.felipe.gestao_servicos.enums.RespostaTecnico;
 import com.felipe.gestao_servicos.enums.StatusOS;
 import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,6 +155,10 @@ class InternalTemplatesTest {
                 "avaliadas", Set.of(),
                 "totalGeral", 1));
         assertRenderiza("portal/solicitacao", Map.of("servicos", List.of(), "extensoesAceitas", ".jpg"));
+        assertRenderiza("agenda/calendario", Map.of(
+                "inicioPadrao", java.time.LocalTime.of(8, 0),
+                "fimPadrao", java.time.LocalTime.of(18, 0),
+                "intervaloHoras", 4L));
 
         Notificacao notificacao = new Notificacao();
         notificacao.setId(1L);
@@ -162,6 +167,74 @@ class InternalTemplatesTest {
         assertRenderiza("notificacoes/list", Map.of("notificacoes", List.of(), "isCliente", false));
 
         assertRenderiza("clientes/acesso", Map.of("cliente", cliente, "senhaMinima", 8));
+    }
+
+    @Test
+    void areaDoTecnicoEAcessoRenderizam() {
+        Cliente cliente = new Cliente();
+        cliente.setId(10L);
+        cliente.setNome("Maria");
+        cliente.setEndereco("Rua A, 1");
+        Tecnico tecnico = new Tecnico();
+        tecnico.setId(20L);
+        tecnico.setNome("Carlos");
+        tecnico.setEmail("carlos@empresa.com");
+
+        OrdemServico os = new OrdemServico();
+        os.setId(7L);
+        os.setCliente(cliente);
+        os.setTecnico(tecnico);
+        os.setStatus(StatusOS.PENDENTE);
+        os.setTecnicoResposta(RespostaTecnico.PENDENTE);
+
+        assertRenderiza("tecnico/painel", Map.of(
+                "tecnico", tecnico, "ordens", List.of(os), "filtro", "pendentes",
+                "totalPendentes", 1, "totalAndamento", 0, "totalHistorico", 0));
+        assertRenderiza("tecnico/painel", Map.of(
+                "tecnico", tecnico, "ordens", List.of(), "filtro", "historico",
+                "totalPendentes", 0, "totalAndamento", 0, "totalHistorico", 0));
+
+        String pendente = assertRenderiza("tecnico/ordem", Map.of("ordem", os, "podeResponder", true, "anexos", List.of()));
+        assertTrue(pendente.contains("/tecnico/ordens/7/aceitar"), "deve oferecer o aceite");
+        assertTrue(pendente.contains("/tecnico/ordens/7/recusar"), "deve oferecer a recusa");
+        assertFalse(pendente.contains("/acesso"), "o técnico não libera acessos");
+
+        os.setTecnicoResposta(RespostaTecnico.RECUSADA);
+        os.setTecnicoMotivoRecusa("Viajando");
+        String recusada = assertRenderiza("tecnico/ordem", Map.of("ordem", os, "podeResponder", false, "anexos", List.of()));
+        assertFalse(recusada.contains("/aceitar"), "não deve oferecer resposta depois de respondido");
+
+        Map<String, Object> detalhe = new HashMap<>();
+        detalhe.put("ordem", os);
+        detalhe.put("StatusOS", StatusOS.values());
+        detalhe.put("tecnicos", List.of(tecnico));
+        detalhe.put("servicos", List.of());
+        detalhe.put("historico", List.of());
+        detalhe.put("anexos", List.of());
+        detalhe.put("extensoesAceitas", ".jpg");
+        assertTrue(assertRenderiza("os/detalhe", detalhe).contains("recusou este atendimento"),
+                "a empresa vê a recusa do técnico");
+
+        assertRenderiza("notificacoes/list", Map.of("notificacoes", List.of(), "isCliente", false, "isTecnico", true));
+
+        String acesso = assertRenderiza("tecnicos/acesso", Map.of("tecnico", tecnico, "senhaMinima", 8));
+        assertTrue(acesso.contains("class=\"ver-senha\""), "a senha deve ter o botão de mostrar/ocultar");
+        assertTrue(assertRenderiza("clientes/acesso", Map.of("cliente", cliente, "senhaMinima", 8)).contains("class=\"ver-senha\""));
+    }
+
+    @Test
+    void liberarAcessoApareceSomenteParaAdministrador() {
+        Tecnico tecnico = new Tecnico();
+        tecnico.setId(20L);
+        tecnico.setNome("Carlos");
+        Cliente cliente = new Cliente();
+        cliente.setId(10L);
+        cliente.setNome("Maria");
+
+        assertTrue(assertRenderiza("tecnicos/list", Map.of("tecnicos", List.of(tecnico), "isAdmin", true)).contains("/tecnicos/20/acesso"));
+        assertFalse(assertRenderiza("tecnicos/list", Map.of("tecnicos", List.of(tecnico), "isAdmin", false)).contains("/acesso"));
+        assertTrue(assertRenderiza("clientes/list", Map.of("clientes", List.of(cliente), "isAdmin", true)).contains("/clientes/10/acesso"));
+        assertFalse(assertRenderiza("clientes/list", Map.of("clientes", List.of(cliente), "isAdmin", false)).contains("/acesso"));
     }
 
     @Test
@@ -175,7 +248,7 @@ class InternalTemplatesTest {
         assertTrue(html.contains(">4</span>"), "o sino deve mostrar a quantidade de não lidas");
     }
 
-    private void assertRenderiza(String template, Map<String, Object> variables) {
+    private String assertRenderiza(String template, Map<String, Object> variables) {
         WebContext context = new WebContext(
             webApplication.buildExchange(
                 new MockHttpServletRequest(servletContext),
@@ -189,5 +262,6 @@ class InternalTemplatesTest {
         assertTrue(html.contains("class=\"topbar\""), template + " deve usar a barra superior compartilhada");
         assertTrue(html.contains("name=\"viewport\""), template + " deve declarar viewport móvel");
         assertEquals(1, html.split("<!DOCTYPE html>", -1).length - 1, template + " deve conter um único documento HTML");
+        return html;
     }
 }

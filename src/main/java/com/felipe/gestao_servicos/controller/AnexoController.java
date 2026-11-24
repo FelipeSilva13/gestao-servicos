@@ -45,6 +45,10 @@ public class AnexoController {
                 && ordemRepository.findByIdAndCliente_IdAndTenant_Id(anexo.getOrdemId(), usuario.getClienteId(), usuario.getTenantId()).isEmpty()) {
             throw new RecursoNaoEncontradoException("Anexo não encontrado");
         }
+        if (usuario.isTecnico()
+                && ordemRepository.findByIdAndTecnico_IdAndTenant_Id(anexo.getOrdemId(), usuario.getTecnicoId(), usuario.getTenantId()).isEmpty()) {
+            throw new RecursoNaoEncontradoException("Anexo não encontrado");
+        }
 
         boolean inline = !download && EXIBIVEIS_INLINE.contains(anexo.getContentType());
         ContentDisposition disposicao = (inline ? ContentDisposition.inline() : ContentDisposition.attachment())

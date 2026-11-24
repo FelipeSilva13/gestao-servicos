@@ -18,7 +18,7 @@
             <div class="grid">
               <label>Nome<input type="text" name="nome" th:value="${cliente.nome}" autocomplete="name" required></label>
               <label>Email<input type="email" name="email" th:value="${cliente.email}" autocomplete="email" required></label>
-              <label>Telefone<input type="tel" name="telefone" th:value="${cliente.telefone}" placeholder="(11) 91234-5678" autocomplete="tel" inputmode="tel"></label>
+              <label>Telefone<input type="tel" name="telefone" th:value="${cliente.telefone}" placeholder="11912345678" maxlength="11" pattern="\d{10,11}" title="Somente números: DDD + telefone (10 ou 11 dígitos)" autocomplete="tel" inputmode="numeric"></label>
               <label>Endereço<input type="text" name="endereco" th:value="${cliente.endereco}" autocomplete="street-address"></label>
             </div>
             <div class="form-actions"><button class="btn" type="submit">Salvar cliente</button><a class="btn btn-secondary" href="/clientes">Cancelar</a></div>
@@ -27,5 +27,6 @@
       </div>
     </main>
   </div>
+  <script th:src="@{/js/telefone.js}"></script>
 </body>
 </html>

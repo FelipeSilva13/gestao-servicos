@@ -30,9 +30,7 @@
             <strong th:text="${cliente.email}">email</strong>.
           </p>
           <form th:action="@{/clientes/{id}/acesso(id=${cliente.id})}" method="post" style="margin-top:14px">
-            <label><span th:text="${acesso == null} ? 'Senha inicial' : 'Nova senha'">Senha</span>
-              <input type="password" name="senha" required autocomplete="new-password" th:attr="minlength=${senhaMinima}">
-            </label>
+            <div th:replace="~{fragments/layout :: campoSenha(${acesso == null} ? 'Senha inicial' : 'Nova senha', ${senhaMinima})}"></div>
             <p class="hint" th:text="|Mínimo de ${senhaMinima} caracteres. Envie a senha ao cliente por um canal seguro.|"></p>
             <div class="form-actions">
               <button class="btn" type="submit" th:text="${acesso == null} ? 'Liberar acesso' : 'Redefinir senha'">Liberar acesso</button>

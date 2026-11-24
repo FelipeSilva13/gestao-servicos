@@ -4,7 +4,10 @@ import com.felipe.gestao_servicos.domain.Tecnico;
 import com.felipe.gestao_servicos.dto.request.TecnicoRequest;
 import com.felipe.gestao_servicos.config.multitenancy.TenantContext;
 import com.felipe.gestao_servicos.repository.AvaliacaoRepository;
+import com.felipe.gestao_servicos.service.AcessoTecnicoService;
+import com.felipe.gestao_servicos.service.RegraNegocioException;
 import com.felipe.gestao_servicos.service.TecnicoService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -17,10 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class TecnicoViewController {
     private final TecnicoService service;
     private final AvaliacaoRepository avaliacaoRepository;
+    private final AcessoTecnicoService acessoTecnicoService;
 
-    public TecnicoViewController(TecnicoService service, AvaliacaoRepository avaliacaoRepository) {
+    public TecnicoViewController(TecnicoService service, AvaliacaoRepository avaliacaoRepository,
+                                 AcessoTecnicoService acessoTecnicoService) {
         this.service = service;
         this.avaliacaoRepository = avaliacaoRepository;
+        this.acessoTecnicoService = acessoTecnicoService;
     }
 
     @GetMapping
@@ -57,6 +63,33 @@ public class TecnicoViewController {
 
         service.atualizar(id, tecnico);
         return "redirect:/tecnicos";
+    }
+
+    /** Liberação do acesso do técnico à área do técnico (somente administrador, ver SecurityConfig). */
+    @GetMapping("/{id}/acesso")
+    public String acesso(@PathVariable Long id, Model model) {
+        model.addAttribute("tecnico", acessoTecnicoService.tecnico(id));
+        model.addAttribute("acesso", acessoTecnicoService.acessoExistente(id).orElse(null));
+        model.addAttribute("senhaMinima", AcessoTecnicoService.SENHA_MINIMA);
+        return "tecnicos/acesso";
+    }
+
+    @PostMapping("/{id}/acesso")
+    public String definirAcesso(@PathVariable Long id, @RequestParam String senha, RedirectAttributes flash) {
+        try {
+            acessoTecnicoService.definirSenha(id, senha);
+            flash.addFlashAttribute("sucesso", "Acesso do técnico liberado. Envie a senha ao técnico por um canal seguro.");
+        } catch (RegraNegocioException e) {
+            flash.addFlashAttribute("erro", e.getMessage());
+        }
+        return "redirect:/tecnicos/" + id + "/acesso";
+    }
+
+    @PostMapping("/{id}/acesso/revogar")
+    public String revogarAcesso(@PathVariable Long id, RedirectAttributes flash) {
+        acessoTecnicoService.revogar(id);
+        flash.addFlashAttribute("sucesso", "Acesso do técnico revogado.");
+        return "redirect:/tecnicos/" + id + "/acesso";
     }
 
     @PostMapping("/{id}/excluir")

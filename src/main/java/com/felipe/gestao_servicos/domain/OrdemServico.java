@@ -1,5 +1,6 @@
 package com.felipe.gestao_servicos.domain;
 
+import com.felipe.gestao_servicos.enums.RespostaTecnico;
 import com.felipe.gestao_servicos.enums.StatusOS;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -81,6 +82,17 @@ public class OrdemServico {
 
     @Column(name = "agendamento_confirmado", nullable = false)
     private boolean agendamentoConfirmado = false;
+
+    /** Resposta do técnico designado: pendente, aceita ou recusada (vazia sem técnico). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tecnico_resposta", length = 20)
+    private RespostaTecnico tecnicoResposta;
+
+    @Column(name = "tecnico_respondido_em")
+    private LocalDateTime tecnicoRespondidoEm;
+
+    @Column(name = "tecnico_motivo_recusa", length = 500)
+    private String tecnicoMotivoRecusa;
 
     public String getNumero() {
         return id == null ? "OS-nova" : "OS-" + String.format("%03d", id);

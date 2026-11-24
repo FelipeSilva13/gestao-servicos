@@ -38,6 +38,9 @@ public class HomeController {
         if (UsuarioAtual.isCliente()) {
             return "redirect:/portal";
         }
+        if (UsuarioAtual.isTecnico()) {
+            return "redirect:/tecnico";
+        }
 
         model.addAttribute("totalTecnicos", tecnicoRepository.countByTenant_Id(tenantId));
         model.addAttribute("totalClientes", clienteRepository.countByTenant_Id(tenantId));

@@ -38,11 +38,12 @@ public class PortalClienteService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final AnexoService anexoService;
     private final EventoOrdemService eventos;
+    private final AgendaService agenda;
 
     public PortalClienteService(OrdemServicoRepository ordemRepository, ClienteRepository clienteRepository,
                                 ServicoRepository servicoRepository, TenantRepository tenantRepository,
                                 AvaliacaoRepository avaliacaoRepository, AnexoService anexoService,
-                                EventoOrdemService eventos) {
+                                EventoOrdemService eventos, AgendaService agenda) {
         this.ordemRepository = ordemRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
@@ -50,6 +51,7 @@ public class PortalClienteService {
         this.avaliacaoRepository = avaliacaoRepository;
         this.anexoService = anexoService;
         this.eventos = eventos;
+        this.agenda = agenda;
     }
 
     // ---- Consulta / histórico -------------------------------------------------
@@ -97,7 +99,9 @@ public class PortalClienteService {
         if (descricao.length() > 2000) {
             throw new RegraNegocioException("A descrição deve ter no máximo 2000 caracteres");
         }
-        validarDataFutura(dataPreferida);
+        if (dataPreferida != null) {
+            agenda.validarHorario(dataPreferida, null);
+        }
 
         TenantUserDetails u = usuario();
         OrdemServico os = new OrdemServico();
@@ -176,7 +180,7 @@ public class PortalClienteService {
         if (dataHora == null) {
             throw new RegraNegocioException("Escolha a data e o horário desejados");
         }
-        validarDataFutura(dataHora);
+        agenda.validarHorario(dataHora, os.getId());
         os.setDataAgendada(dataHora);
         os.setAgendamentoConfirmado(false);
         OrdemServico salvo = ordemRepository.save(os);
@@ -240,12 +244,6 @@ public class PortalClienteService {
     private void exigirOrcamentoPendente(OrdemServico os) {
         if (os.getStatus() != StatusOS.AGUARDANDO_APROVACAO || os.getOrcamentoValor() == null) {
             throw new RegraNegocioException("Não há orçamento aguardando sua aprovação nesta ordem");
-        }
-    }
-
-    private static void validarDataFutura(LocalDateTime data) {
-        if (data != null && data.isBefore(LocalDateTime.now())) {
-            throw new RegraNegocioException("Escolha uma data futura para o atendimento");
         }
     }
 

@@ -128,8 +128,9 @@
                 <p th:if="${ordem.dataAgendada != null and !ordem.agendamentoConfirmado}" class="muted">Aguardando confirmação da empresa.</p>
                 <form th:unless="${ordem.status.encerrado or ordem.status.name() == 'EM_EXECUCAO'}"
                       th:action="@{/portal/ordens/{id}/agendamento(id=${ordem.id})}" method="post" style="margin-top:10px">
-                  <label th:text="${ordem.dataAgendada == null} ? 'Sugerir data e horário' : 'Pedir outra data'">Sugerir data</label>
-                  <input type="datetime-local" name="dataHora" required>
+                  <p class="cal-horarios-titulo" th:text="${ordem.dataAgendada == null} ? 'Escolha a data e o horário' : 'Pedir outra data'">Escolha a data</p>
+                  <div data-calendario="seletor" data-url="/portal/agenda" data-nome="dataHora" data-obrigatorio
+                       th:attr="data-ordem=${ordem.id}"></div>
                   <div class="form-actions"><button class="btn btn-secondary" type="submit">Enviar</button></div>
                 </form>
               </div>
@@ -142,5 +143,6 @@
     </main>
   </div>
   <script th:src="@{/js/acompanhamento.js}" defer></script>
+  <script th:src="@{/js/calendario.js}" defer></script>
 </body>
 </html>

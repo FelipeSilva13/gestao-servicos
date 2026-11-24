@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meus atendimentos | Área do Técnico</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <div class="app">
+    <aside th:replace="~{fragments/tecnico :: sidebar('painel')}"></aside>
+    <main class="main">
+      <header th:replace="~{fragments/tecnico :: topbar('Área do Técnico')}"></header>
+      <div class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" th:text="|Olá, ${tecnico != null ? tecnico.nome : ''}|">Olá</h1>
+            <p class="page-subtitle">Veja os atendimentos para os quais a empresa solicitou você e responda se vai atendê-los.</p>
+          </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <section class="cards cards-3" aria-label="Resumo">
+          <article class="card">
+            <span class="card-icon yellow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span class="big" th:text="${totalPendentes}">0</span><span class="muted">Aguardando sua resposta</span>
+          </article>
+          <article class="card">
+            <span class="card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 12l-2-2 2.7-3.7Z"/></svg></span>
+            <span class="big" th:text="${totalAndamento}">0</span><span class="muted">Aceitos em andamento</span>
+          </article>
+          <article class="card">
+            <span class="card-icon green"><svg viewBox="0 0 24 24"><path d="M9 11 12 14 21 5"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg></span>
+            <span class="big" th:text="${totalHistorico}">0</span><span class="muted">Histórico</span>
+          </article>
+        </section>
+
+        <nav class="tabs" aria-label="Filtrar atendimentos">
+          <a href="/tecnico?filtro=pendentes" th:classappend="${filtro != 'andamento' and filtro != 'historico'} ? ' active' : ''">Aguardando resposta<span th:text="|(${totalPendentes})|"></span></a>
+          <a href="/tecnico?filtro=andamento" th:classappend="${filtro == 'andamento'} ? ' active' : ''">Em andamento<span th:text="|(${totalAndamento})|"></span></a>
+          <a href="/tecnico?filtro=historico" th:classappend="${filtro == 'historico'} ? ' active' : ''">Histórico<span th:text="|(${totalHistorico})|"></span></a>
+        </nav>
+
+        <div class="ordem-cards">
+          <a th:each="o : ${ordens}" class="ordem-card" th:href="@{/tecnico/ordens/{id}(id=${o.id})}">
+            <div>
+              <div class="list-title">
+                <span th:text="${o.numero}">OS-001</span> ·
+                <span th:text="${o.servico != null ? o.servico.descricao : 'Atendimento'}">Serviço</span>
+              </div>
+              <p>
+                Cliente: <span th:text="${o.cliente.nome}">Cliente</span>
+                <th:block th:if="${o.cliente.endereco != null}"> · <span th:text="${o.cliente.endereco}">Endereço</span></th:block>
+              </p>
+              <p th:if="${o.dataAgendada != null}">
+                Atendimento: <span th:text="${#temporals.format(o.dataAgendada, 'dd/MM/yyyy HH:mm')}">01/01</span><span th:unless="${o.agendamentoConfirmado}"> (a confirmar)</span>
+              </p>
+            </div>
+            <div class="meta">
+              <span class="badge" th:classappend="${' ' + o.status.tom}" th:text="${o.status.label}">Status</span>
+              <span class="acao-pendente" th:if="${o.tecnicoResposta != null and o.tecnicoResposta.name() == 'PENDENTE' and !o.status.encerrado}">Responder solicitação</span>
+              <span class="badge danger" th:if="${o.tecnicoResposta != null and o.tecnicoResposta.name() == 'RECUSADA'}">Recusado por você</span>
+            </div>
+          </a>
+          <div th:if="${#lists.isEmpty(ordens)}" class="panel empty-state">Nenhum atendimento por aqui.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/acompanhamento.js}" defer></script>
+</body>
+</html>
